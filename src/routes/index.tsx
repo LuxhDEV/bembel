@@ -1,6 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Baby, Moon, Search, Sparkles, Heart, Gamepad2, CloudRain, X } from "lucide-react";
+import {
+  Baby,
+  Moon,
+  Search,
+  Sparkles,
+  Heart,
+  Gamepad2,
+  CloudRain,
+  X,
+  Utensils,
+  Lightbulb,
+  Stethoscope,
+  AlertTriangle,
+} from "lucide-react";
+
 
 import {
   PHASEN,
@@ -87,6 +101,57 @@ function StressTacho({ wert, gross = false }: { wert: number; gross?: boolean })
   );
 }
 
+function InfoBlock({
+  icon: Icon,
+  titel,
+  text,
+}: {
+  icon: typeof Heart;
+  titel: string;
+  text: string;
+}) {
+  return (
+    <div className="flex gap-2.5">
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+      <div>
+        <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+          {titel}
+        </p>
+        <p className="text-sm leading-snug">{text}</p>
+      </div>
+    </div>
+  );
+}
+
+function InfoListe({
+  icon: Icon,
+  titel,
+  punkte,
+}: {
+  icon: typeof Heart;
+  titel: string;
+  punkte: string[];
+}) {
+  return (
+    <div className="flex gap-2.5">
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+      <div>
+        <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+          {titel}
+        </p>
+        <ul className="mt-0.5 space-y-0.5 text-sm leading-snug">
+          {punkte.map((t) => (
+            <li key={t} className="before:mr-1.5 before:content-['•']">
+              {t}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+
 function Lebenslinie() {
   const heuteWoche = Math.max(0, Math.min(MAX_WOCHE, aktuelleWoche()));
   const [filter, setFilter] = useState<Filter>("alle");
@@ -108,8 +173,17 @@ function Lebenslinie() {
         p.schlaf,
         p.schlafStatus,
         p.motivation,
+        p.wachfenster,
+        p.schlafbedarf,
+        p.ernaehrung,
+        p.elternfokus,
+        p.vorsorge,
+        p.achtung,
+        ...p.spielideen,
+        ...p.alltagstipps,
         ...p.meilensteine,
       ]
+
         .join(" ")
         .toLowerCase();
       return text.includes(q);
@@ -292,6 +366,57 @@ function Lebenslinie() {
                       ))}
                     </ul>
 
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      <div className="rounded-2xl bg-accent/50 p-3">
+                        <p className="text-[11px] font-semibold text-muted-foreground uppercase">
+                          Wachfenster
+                        </p>
+                        <p className="text-sm">{p.wachfenster}</p>
+                      </div>
+                      <div className="rounded-2xl bg-accent/50 p-3">
+                        <p className="text-[11px] font-semibold text-muted-foreground uppercase">
+                          Schlafbedarf
+                        </p>
+                        <p className="text-sm">{p.schlafbedarf}</p>
+                      </div>
+                    </div>
+
+                    <details className="group mt-3 rounded-2xl border border-border/70 p-3">
+                      <summary className="cursor-pointer list-none text-sm font-semibold text-primary">
+                        Mehr Infos: Ernährung, Spielideen, Tipps &amp; Vorsorge
+                      </summary>
+                      <div className="mt-3 space-y-3">
+                        <InfoBlock
+                          icon={Utensils}
+                          titel="Ernährung"
+                          text={p.ernaehrung}
+                        />
+                        <InfoListe
+                          icon={Gamepad2}
+                          titel="Spielideen"
+                          punkte={p.spielideen}
+                        />
+                        <InfoListe
+                          icon={Lightbulb}
+                          titel="Alltagstipps"
+                          punkte={p.alltagstipps}
+                        />
+                        <InfoBlock icon={Heart} titel="Für euch als Eltern" text={p.elternfokus} />
+                        <InfoBlock
+                          icon={Stethoscope}
+                          titel="Vorsorge & Termine"
+                          text={p.vorsorge}
+                        />
+                        <InfoBlock
+                          icon={AlertTriangle}
+                          titel="Gut zu wissen"
+                          text={p.achtung}
+                        />
+                      </div>
+                    </details>
+
+
+
                     <div className="mt-4 flex flex-wrap gap-1.5">
                       {Array.from({ length: p.bis - p.von + 1 }, (_, i) => p.von + i).map(
                         (w) => (
@@ -372,7 +497,12 @@ function Lebenslinie() {
                   <Moon className="h-3.5 w-3.5" /> Schlaf
                 </p>
                 <p className="mt-1 text-sm">{detail.schlaf}</p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Wachfenster: {detail.wachfenster} · Schlafbedarf: {detail.schlafbedarf}
+                </p>
               </div>
+
+
 
               <div className="rounded-2xl border border-border p-3">
                 <p className="text-xs font-semibold text-muted-foreground">Meilensteine</p>
@@ -385,6 +515,17 @@ function Lebenslinie() {
                   ))}
                 </ul>
               </div>
+
+              <div className="space-y-3 rounded-2xl border border-border p-3">
+                <InfoBlock icon={Utensils} titel="Ernährung" text={detail.ernaehrung} />
+                <InfoListe icon={Gamepad2} titel="Spielideen" punkte={detail.spielideen} />
+                <InfoListe icon={Lightbulb} titel="Alltagstipps" punkte={detail.alltagstipps} />
+                <InfoBlock icon={Heart} titel="Für euch als Eltern" text={detail.elternfokus} />
+                <InfoBlock icon={Stethoscope} titel="Vorsorge & Termine" text={detail.vorsorge} />
+                <InfoBlock icon={AlertTriangle} titel="Gut zu wissen" text={detail.achtung} />
+              </div>
+
+
 
               <div className={`rounded-2xl border p-3 ${TON_STYLE[detail.ton].chip}`}>
                 <p className="text-xs font-semibold opacity-70">Motivation</p>
