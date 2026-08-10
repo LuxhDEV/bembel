@@ -17,6 +17,15 @@ export type Phase = {
   meilensteine: string[];
   motivation: string;
   tags: Array<"regression" | "spiel" | "schlaf">;
+  /* Erweiterte Infos */
+  wachfenster: string;
+  schlafbedarf: string;
+  ernaehrung: string;
+  spielideen: string[];
+  alltagstipps: string[];
+  elternfokus: string;
+  vorsorge: string;
+  achtung: string;
 };
 
 export const PHASEN: Phase[] = [
@@ -36,6 +45,24 @@ export const PHASEN: Phase[] = [
     motivation:
       "Ihr lernt euch erst kennen. Haushalt und Perfektionismus jetzt komplett abstellen.",
     tags: ["schlaf", "regression"],
+    wachfenster: "45–60 Minuten",
+    schlafbedarf: "16–18 Std. pro Tag, verteilt über 24 Stunden",
+    ernaehrung: "Stillen/Flasche nach Bedarf – 8–12 Mahlzeiten in 24 Std., auch nachts.",
+    spielideen: [
+      "Gesicht zeigen und langsam bewegen (20–30 cm Abstand)",
+      "Schwarz-Weiß-Kontrastkarten",
+      "Hautkontakt, Tragen, sanftes Schaukeln",
+    ],
+    alltagstipps: [
+      "Besuch stark begrenzen und Zeitfenster festlegen",
+      "Pucken oder Tragetuch gegen den Moro-Reflex",
+      "Essen vorkochen lassen – jede Hilfe annehmen",
+    ],
+    elternfokus:
+      "Wochenbett heißt liegen. Rückbildung erst nach ärztlicher Freigabe, Baby-Blues um Tag 3–5 ist normal.",
+    vorsorge: "U2 (3.–10. Lebenstag), U3 (4.–5. Lebenswoche), Hörtest & Neugeborenenscreening",
+    achtung:
+      "Fieber über 38 °C, Trinkverweigerung oder auffällige Gelbfärbung immer sofort ärztlich abklären.",
   },
   {
     id: "w5-8",
@@ -56,6 +83,24 @@ export const PHASEN: Phase[] = [
     motivation:
       "Ihr steht auf dem absoluten Gipfel des Berges. Ab Woche 8–9 wird es Schritt für Schritt leichter!",
     tags: ["schlaf", "regression"],
+    wachfenster: "60–90 Minuten",
+    schlafbedarf: "15–17 Std. pro Tag, 4–6 Schläfchen",
+    ernaehrung: "Wachstumsschub um Woche 6 – häufigeres Clusterfeeding am Abend ist normal.",
+    spielideen: [
+      "Bauchlage in kurzen Einheiten (2–3 Min., mehrmals täglich)",
+      "Singen und Reime – Stimme beruhigt mehr als Spielzeug",
+      "Mobile über der Wickelkommode",
+    ],
+    alltagstipps: [
+      "Abends früh abdunkeln, Reize konsequent runterfahren",
+      "Schichtwechsel der Eltern in der Schreistunde",
+      "Spaziergang oder Trage überbrücken die schwierigste Stunde",
+    ],
+    elternfokus:
+      "Schlafmangel ist jetzt am größten. Tagsüber mitschlafen schlägt Aufräumen – immer.",
+    vorsorge: "Vorbereitung U4 (3.–4. Monat), ggf. erste Impftermine planen",
+    achtung:
+      "Untröstliches Schreien über 3 Std./Tag: Schreiambulanz kontaktieren, das ist kein Elternversagen.",
   },
   {
     id: "w9-12",
@@ -73,6 +118,22 @@ export const PHASEN: Phase[] = [
     motivation:
       "Das 4. Trimester endet. Dein Baby belohnt dich jetzt täglich mit Lachen und Blickkontakt.",
     tags: ["schlaf"],
+    wachfenster: "75–105 Minuten",
+    schlafbedarf: "14–16 Std. pro Tag, 4 Schläfchen",
+    ernaehrung: "Stillen/Flasche nach Bedarf, längere Abstände tagsüber (2,5–3 Std.).",
+    spielideen: [
+      "Greifring und Rasseln in die Hand legen",
+      "Spiegel-Spiele",
+      "Bauchlage auf dem Stillkissen verlängern",
+    ],
+    alltagstipps: [
+      "Erste feste Abendroutine etablieren (Bad – Massage – Lied – Bett)",
+      "Tagsüber hell, nachts dunkel und leise: hilft dem Rhythmus",
+      "Wieder erste eigene Termine einplanen",
+    ],
+    elternfokus: "Rückbildungskurs starten, Paarzeit bewusst einplanen – 20 Minuten reichen.",
+    vorsorge: "U4 (3.–4. Monat) inkl. Impfberatung",
+    achtung: "Kopf sollte in Bauchlage kurz gehalten werden – sonst bei der U4 ansprechen.",
   },
   {
     id: "w13-16",
@@ -90,6 +151,23 @@ export const PHASEN: Phase[] = [
     motivation:
       "Der Schlaf wird kurz wieder anstrengender – aber das ist ein Zeichen für gewaltige Gehirnentwicklung!",
     tags: ["regression", "schlaf", "spiel"],
+    wachfenster: "1,5–2 Stunden",
+    schlafbedarf: "14–15 Std. pro Tag, 3–4 Schläfchen",
+    ernaehrung: "Noch reine Milchernährung – Beikostreifezeichen beobachten, nicht drängen.",
+    spielideen: [
+      "Spielbogen mit hängenden Figuren",
+      "Knisterbuch & Greiflinge",
+      "Pust- und Kitzelspiele für lautes Lachen",
+    ],
+    alltagstipps: [
+      "Regression aussitzen: sie dauert meist 2–6 Wochen",
+      "Keine neuen Schlafexperimente mitten in der Regression",
+      "Früher ins Bett, wenn nachts viel wach – Übermüdung verschlimmert alles",
+    ],
+    elternfokus:
+      "Nachtdienste fair aufteilen und tagsüber Erwartungen an euch selbst senken.",
+    vorsorge: "U5 (6.–7. Monat) rückt näher – Termin jetzt buchen",
+    achtung: "Kleinteile ab jetzt konsequent wegräumen, alles wandert in den Mund.",
   },
   {
     id: "w17-26",
@@ -107,6 +185,24 @@ export const PHASEN: Phase[] = [
     motivation:
       "Jetzt beginnt eine Phase, die richtig viel Freude macht. Das Baby interagiert aktiv mit euch.",
     tags: ["spiel", "schlaf"],
+    wachfenster: "2–2,5 Stunden",
+    schlafbedarf: "13–15 Std. pro Tag, 3 Schläfchen",
+    ernaehrung:
+      "Beikoststart frühestens ab dem 5. Monat: Gemüsebrei, dann Kartoffel-Fleisch, später Getreide-Obst. Milch bleibt Hauptnahrung.",
+    spielideen: [
+      "Stapelbecher und Softbälle",
+      "Kuckuck-Spiele mit Tuch",
+      "Erste Fingerspiele („Backe, backe Kuchen“)",
+    ],
+    alltagstipps: [
+      "Wickeltisch nie unbeaufsichtigt – Drehen kommt plötzlich",
+      "Beikost entspannt: ein neues Lebensmittel alle 3–4 Tage",
+      "Krabbeldecke statt Wippe, freie Bewegung fördert Motorik",
+    ],
+    elternfokus:
+      "Gutes Fenster für Wiedereinstieg-Planung, Kita-Anmeldung und ein Wochenende zu zweit.",
+    vorsorge: "U5 (6.–7. Monat), Zahnpflege ab dem ersten Zahn",
+    achtung: "Erste Zähne: Beißring kühlen, Fieber gehört nicht zum Zahnen.",
   },
   {
     id: "w27-36",
@@ -128,6 +224,24 @@ export const PHASEN: Phase[] = [
     motivation:
       "Dein Baby entdeckt die Welt auf eigenen Beinen/Händen. Das gibt dir erste Freiräume im Raum zurück.",
     tags: ["spiel", "schlaf"],
+    wachfenster: "2,5–3 Stunden",
+    schlafbedarf: "12–14 Std. pro Tag, 2 Schläfchen",
+    ernaehrung:
+      "Drei Breimahlzeiten, erste Fingerfoods (weiche Gurke, Banane, Brotrinde). Wasser im Becher anbieten.",
+    spielideen: [
+      "Bälle wegrollen und holen lassen",
+      "Tunnel und Kissenberge zum Krabbeln",
+      "Sortier- und Ausräumkiste (Tupperschrank!)",
+    ],
+    alltagstipps: [
+      "Wohnung kindersicher machen: Steckdosen, Treppen, Schubladen",
+      "Fremdeln respektieren – nicht zum Winken zwingen",
+      "Barfuß krabbeln lassen, keine harten Schuhe",
+    ],
+    elternfokus:
+      "Trennungsangst heißt: kurze, klare Abschiede. Eingewöhnung ruhig jetzt gedanklich vorbereiten.",
+    vorsorge: "U6 (10.–12. Monat)",
+    achtung: "Sturzhöhe checken: Bettgitter runter, Treppengitter rauf.",
   },
   {
     id: "w37-52",
@@ -148,6 +262,24 @@ export const PHASEN: Phase[] = [
     motivation:
       "Der 1. Geburtstag ist da! Ihr habt das intensivste Babyjahr erfolgreich gemeistert.",
     tags: ["regression", "schlaf"],
+    wachfenster: "3–3,5 Stunden",
+    schlafbedarf: "12–14 Std. pro Tag, 2 Schläfchen",
+    ernaehrung:
+      "Übergang zur Familienkost: salzarm, klein geschnitten. Keine Nüsse, kein Honig im 1. Jahr.",
+    spielideen: [
+      "Schiebewagen und stabile Möbel zum Hochziehen",
+      "Bilderbücher mit Klappen",
+      "Einfache Steckspiele und Bauklötze",
+    ],
+    alltagstipps: [
+      "Viel benennen: Sprache wächst durch Wiederholung",
+      "Zwischen 40–45 Wochen oft Schlafdelle – ruhig begleiten",
+      "Rituale beim Abschied fest etablieren",
+    ],
+    elternfokus:
+      "Kita-Eingewöhnung planen und die eigene Rückkehr in den Job realistisch takten.",
+    vorsorge: "U6 (10.–12. Monat), Zahnarzt-Erstkontakt",
+    achtung: "Hochziehen = neue Sturzquellen: scharfe Kanten und Tischdecken sichern.",
   },
   {
     id: "w53-78",
@@ -168,6 +300,24 @@ export const PHASEN: Phase[] = [
     motivation:
       "Aus dem Baby wird ein kleiner Mensch mit eigenem Kopf – genießt dieses entspannte Fenster.",
     tags: ["spiel", "schlaf"],
+    wachfenster: "4–5 Stunden",
+    schlafbedarf: "11–14 Std. pro Tag, 1 Mittagsschlaf (1–2 Std.)",
+    ernaehrung:
+      "Isst am Familientisch mit. Selbst löffeln lassen, auch wenn es kleckert – Sauerei ist Lernen.",
+    spielideen: [
+      "Holz-Steckspiele, Stapelturm, große Puzzle (2–4 Teile)",
+      "Malen mit dicken Wachsmalstiften",
+      "Sandkasten und Wasser-Schöpfspiele",
+    ],
+    alltagstipps: [
+      "Zwei Auswahlmöglichkeiten geben statt offener Fragen",
+      "Nach dem Umstieg auf 1 Schlaf früher zu Bett bringen",
+      "Feste Tagesstruktur gibt Sicherheit",
+    ],
+    elternfokus:
+      "Grenzen freundlich, aber gleichbleibend setzen – Konsequenz ist entlastender als Diskussion.",
+    vorsorge: "U7 (20.–24. Monat) planen, Zahnvorsorge",
+    achtung: "Laufen + Neugier = Küche, Balkon und Treppen erneut sichern.",
   },
   {
     id: "w79-104",
@@ -188,6 +338,25 @@ export const PHASEN: Phase[] = [
     motivation:
       "Wutausbrüche sind ein Zeichen von Selbstständigkeit. Ruhe bewahren – es ist eine Phase.",
     tags: ["regression", "spiel", "schlaf"],
+    wachfenster: "5–6 Stunden",
+    schlafbedarf: "11–14 Std. pro Tag, 1 Mittagsschlaf",
+    ernaehrung:
+      "Wählerische Phasen sind normal. Ihr entscheidet was und wann, das Kind ob und wie viel.",
+    spielideen: [
+      "„Erster Obstgarten“ und andere einfache Regelspiele",
+      "Knete, Kugelbahn, Magnetbausteine",
+      "Rollenspiel mit Puppe, Küche und Werkbank",
+    ],
+    alltagstipps: [
+      "Wutanfälle begleiten statt wegdiskutieren – Gefühl benennen",
+      "Genug Zeit einplanen: Zeitdruck ist der Hauptauslöser",
+      "Bildkarten oder Routine-Poster helfen beim Übergang",
+    ],
+    elternfokus:
+      "Eigene Regulation zuerst: kurz durchatmen, dann reagieren. Ihr dürft auch mal aus dem Raum gehen.",
+    vorsorge: "U7 (20.–24. Monat), Sprachentwicklung wird geprüft",
+    achtung:
+      "Unter 50 Wörtern mit 24 Monaten: Late-Talker abklären lassen, früh ist entspannter.",
   },
   {
     id: "w105-156",
@@ -209,6 +378,24 @@ export const PHASEN: Phase[] = [
     motivation:
       "Jetzt entstehen echte Gespräche – dein Kind erklärt dir seine eigene Welt.",
     tags: ["spiel", "schlaf"],
+    wachfenster: "6–7 Stunden",
+    schlafbedarf: "10–13 Std. pro Tag, Mittagsschlaf optional",
+    ernaehrung:
+      "Isst komplett mit. Beim Tischdecken und Kochen einbinden – erhöht die Probierbereitschaft.",
+    spielideen: [
+      "Memory (mit 12–16 Karten starten) und Kartenhalter",
+      "Laufrad, Balancieren, Klettern",
+      "Rollenspiel: Kaufladen, Arztkoffer, Verkleiden",
+    ],
+    alltagstipps: [
+      "Töpfchen anbieten, nie erzwingen – Rückschritte sind normal",
+      "Statt Mittagsschlaf eine ruhige Lesestunde einführen",
+      "Wenn-dann-Ankündigungen: „Noch zweimal rutschen, dann gehen wir“",
+    ],
+    elternfokus:
+      "Mehr echte Gesprächszeit: Fragen stellen und Antworten wirklich abwarten.",
+    vorsorge: "U7a (34.–36. Monat) inkl. Sehtest",
+    achtung: "Nachts trocken wird oft erst mit 4–5 Jahren – kein Grund zur Sorge.",
   },
   {
     id: "w157-208",
@@ -231,6 +418,24 @@ export const PHASEN: Phase[] = [
     motivation:
       "Ihr habt jetzt einen kleinen Partner für Brettspiele, Gespräche und gemeinsame Abenteuer.",
     tags: ["spiel", "schlaf"],
+    wachfenster: "durchgehender Tag, ggf. Ruhephase am Nachmittag",
+    schlafbedarf: "10–13 Std. Nachtschlaf, meist ohne Mittagsschlaf",
+    ernaehrung:
+      "Feste Mahlzeiten, kann sich selbst Getränke eingießen und beim Kochen helfen.",
+    spielideen: [
+      "Uno Junior, Mensch ärgere dich nicht Junior, Mau-Mau vereinfacht",
+      "Erste Bastelprojekte mit Schere und Kleber",
+      "Verabredungen mit Freund:innen, Rollenspiel-Welten",
+    ],
+    alltagstipps: [
+      "Verlieren üben: kleine Spiele, gelassene Vorbilder",
+      "Warum-Fragen ernst nehmen, gemeinsam nachschauen",
+      "Ruhige Abendroutine mit Vorlesen beibehalten",
+    ],
+    elternfokus:
+      "Verantwortung übergeben: kleine Aufgaben im Haushalt stärken das Selbstbewusstsein.",
+    vorsorge: "U8 (46.–48. Monat) inkl. Sprach-, Seh- und Hörprüfung",
+    achtung: "Albträume und Fantasiefreunde sind in diesem Alter völlig normal.",
   },
 ];
 
