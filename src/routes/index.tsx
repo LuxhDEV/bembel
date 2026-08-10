@@ -1,6 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Baby, Moon, Search, Sparkles, Heart, Gamepad2, CloudRain, X } from "lucide-react";
+import {
+  Baby,
+  Moon,
+  Search,
+  Sparkles,
+  Heart,
+  Gamepad2,
+  CloudRain,
+  X,
+  Utensils,
+  Lightbulb,
+  Stethoscope,
+  AlertTriangle,
+} from "lucide-react";
+
 
 import {
   PHASEN,
