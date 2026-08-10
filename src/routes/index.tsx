@@ -516,6 +516,17 @@ function Lebenslinie() {
                 </ul>
               </div>
 
+              <div className="space-y-3 rounded-2xl border border-border p-3">
+                <InfoBlock icon={Utensils} titel="Ernährung" text={detail.ernaehrung} />
+                <InfoListe icon={Gamepad2} titel="Spielideen" punkte={detail.spielideen} />
+                <InfoListe icon={Lightbulb} titel="Alltagstipps" punkte={detail.alltagstipps} />
+                <InfoBlock icon={Heart} titel="Für euch als Eltern" text={detail.elternfokus} />
+                <InfoBlock icon={Stethoscope} titel="Vorsorge & Termine" text={detail.vorsorge} />
+                <InfoBlock icon={AlertTriangle} titel="Gut zu wissen" text={detail.achtung} />
+              </div>
+
+
+
               <div className={`rounded-2xl border p-3 ${TON_STYLE[detail.ton].chip}`}>
                 <p className="text-xs font-semibold opacity-70">Motivation</p>
                 <p className="mt-1 text-sm font-medium">„{detail.motivation}“</p>
