@@ -108,8 +108,17 @@ function Lebenslinie() {
         p.schlaf,
         p.schlafStatus,
         p.motivation,
+        p.wachfenster,
+        p.schlafbedarf,
+        p.ernaehrung,
+        p.elternfokus,
+        p.vorsorge,
+        p.achtung,
+        ...p.spielideen,
+        ...p.alltagstipps,
         ...p.meilensteine,
       ]
+
         .join(" ")
         .toLowerCase();
       return text.includes(q);
