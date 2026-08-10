@@ -236,7 +236,8 @@ export const PHASEN: Phase[] = [
 
 export function phaseFuerWoche(woche: number): Phase {
   return (
-    PHASEN.find((p) => woche >= p.von && woche <= p.bis) ?? PHASEN[PHASEN.length - 1]
+    PHASEN.find((p) => woche >= p.von && woche <= p.bis) ??
+    (PHASEN[PHASEN.length - 1] as Phase)
   );
 }
 
