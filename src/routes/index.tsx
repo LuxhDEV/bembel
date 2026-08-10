@@ -497,7 +497,12 @@ function Lebenslinie() {
                   <Moon className="h-3.5 w-3.5" /> Schlaf
                 </p>
                 <p className="mt-1 text-sm">{detail.schlaf}</p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Wachfenster: {detail.wachfenster} · Schlafbedarf: {detail.schlafbedarf}
+                </p>
               </div>
+
+
 
               <div className="rounded-2xl border border-border p-3">
                 <p className="text-xs font-semibold text-muted-foreground">Meilensteine</p>
