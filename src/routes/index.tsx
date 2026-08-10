@@ -301,6 +301,57 @@ function Lebenslinie() {
                       ))}
                     </ul>
 
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      <div className="rounded-2xl bg-accent/50 p-3">
+                        <p className="text-[11px] font-semibold text-muted-foreground uppercase">
+                          Wachfenster
+                        </p>
+                        <p className="text-sm">{p.wachfenster}</p>
+                      </div>
+                      <div className="rounded-2xl bg-accent/50 p-3">
+                        <p className="text-[11px] font-semibold text-muted-foreground uppercase">
+                          Schlafbedarf
+                        </p>
+                        <p className="text-sm">{p.schlafbedarf}</p>
+                      </div>
+                    </div>
+
+                    <details className="group mt-3 rounded-2xl border border-border/70 p-3">
+                      <summary className="cursor-pointer list-none text-sm font-semibold text-primary">
+                        Mehr Infos: Ernährung, Spielideen, Tipps &amp; Vorsorge
+                      </summary>
+                      <div className="mt-3 space-y-3">
+                        <InfoBlock
+                          icon={Utensils}
+                          titel="Ernährung"
+                          text={p.ernaehrung}
+                        />
+                        <InfoListe
+                          icon={Gamepad2}
+                          titel="Spielideen"
+                          punkte={p.spielideen}
+                        />
+                        <InfoListe
+                          icon={Lightbulb}
+                          titel="Alltagstipps"
+                          punkte={p.alltagstipps}
+                        />
+                        <InfoBlock icon={Heart} titel="Für euch als Eltern" text={p.elternfokus} />
+                        <InfoBlock
+                          icon={Stethoscope}
+                          titel="Vorsorge & Termine"
+                          text={p.vorsorge}
+                        />
+                        <InfoBlock
+                          icon={AlertTriangle}
+                          titel="Gut zu wissen"
+                          text={p.achtung}
+                        />
+                      </div>
+                    </details>
+
+
+
                     <div className="mt-4 flex flex-wrap gap-1.5">
                       {Array.from({ length: p.bis - p.von + 1 }, (_, i) => p.von + i).map(
                         (w) => (
