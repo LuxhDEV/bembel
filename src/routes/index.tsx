@@ -101,6 +101,57 @@ function StressTacho({ wert, gross = false }: { wert: number; gross?: boolean })
   );
 }
 
+function InfoBlock({
+  icon: Icon,
+  titel,
+  text,
+}: {
+  icon: typeof Heart;
+  titel: string;
+  text: string;
+}) {
+  return (
+    <div className="flex gap-2.5">
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+      <div>
+        <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+          {titel}
+        </p>
+        <p className="text-sm leading-snug">{text}</p>
+      </div>
+    </div>
+  );
+}
+
+function InfoListe({
+  icon: Icon,
+  titel,
+  punkte,
+}: {
+  icon: typeof Heart;
+  titel: string;
+  punkte: string[];
+}) {
+  return (
+    <div className="flex gap-2.5">
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+      <div>
+        <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+          {titel}
+        </p>
+        <ul className="mt-0.5 space-y-0.5 text-sm leading-snug">
+          {punkte.map((t) => (
+            <li key={t} className="before:mr-1.5 before:content-['•']">
+              {t}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+
 function Lebenslinie() {
   const heuteWoche = Math.max(0, Math.min(MAX_WOCHE, aktuelleWoche()));
   const [filter, setFilter] = useState<Filter>("alle");
