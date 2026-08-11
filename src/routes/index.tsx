@@ -15,6 +15,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
+import { MutmachZentrale } from "@/components/MutmachZentrale";
 
 import {
   PHASEN,
@@ -237,6 +238,8 @@ function Lebenslinie() {
       </header>
 
       <div className="mx-auto max-w-5xl px-4">
+        <MutmachZentrale heuteWoche={heuteWoche} onPhaseWaehlen={(w) => setGewaehlt(w)} />
+
         {/* Übersichtsleiste 0–208 */}
         <section className="mt-6 rounded-3xl border border-border bg-card p-4">
           <div className="flex items-baseline justify-between text-xs text-muted-foreground">
