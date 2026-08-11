@@ -26,6 +26,11 @@ function tageDiff(a: Date, b: Date) {
   return Math.round((d1 - d2) / TAG_MS);
 }
 
+// Tägengenaue (gebrochene) Differenz für fließende Fortschrittsanzeigen.
+function tageDiffExact(a: Date, b: Date) {
+  return (a.getTime() - b.getTime()) / TAG_MS;
+}
+
 function Kachel({
   icon: Icon,
   label,
@@ -77,11 +82,17 @@ export function MutmachZentrale({
     ? Math.max(0, tageDiff(datumFuerWoche(naechsteRuhige.von), heute))
     : 0;
 
-  const phasenDauer = aktuellePhase.bis - aktuellePhase.von + 1;
+  // Tagesgenauer Fortschritt innerhalb der aktuellen Phase:
+  // Phase läuft vom ersten Tag der Startwoche bis zum letzten Tag der Endwoche.
+  const phaseStartDatum = datumFuerWoche(aktuellePhase.von);
+  const phaseEndDatum = datumFuerWoche(aktuellePhase.bis + 1);
+  const phasenDauerTage = Math.max(1, tageDiffExact(phaseEndDatum, phaseStartDatum));
+  const verstricheneTage = Math.max(0, tageDiffExact(heute, phaseStartDatum));
   const phasenFortschritt = Math.min(
     100,
-    Math.max(0, ((heuteWoche - aktuellePhase.von + 1) / phasenDauer) * 100),
+    Math.max(0, (verstricheneTage / phasenDauerTage) * 100),
   );
+  const tageRest = Math.max(0, tageDiffExact(phaseEndDatum, heute));
 
   const spruch =
     MUTMACH_SPRUECHE[
@@ -131,10 +142,11 @@ export function MutmachZentrale({
           icon={CalendarHeart}
           label="Diese Phase"
           wert={`${Math.round(phasenFortschritt)} %`}
-          sub={`Woche ${aktuellePhase.von}–${aktuellePhase.bis} · noch ${Math.max(
-            0,
-            aktuellePhase.bis - heuteWoche,
-          )} Wochen`}
+          sub={`Woche ${aktuellePhase.von}–${aktuellePhase.bis} · ${
+            tageRest >= 14
+              ? `noch ${Math.floor(tageRest / 7)} Wochen`
+              : `noch ${Math.ceil(tageRest)} Tage`
+          }`}
         />
       </div>
 
