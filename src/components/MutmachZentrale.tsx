@@ -1,7 +1,6 @@
 import { Moon, Sparkles, Sunrise, Trophy, HeartHandshake, CalendarHeart } from "lucide-react";
 import {
   PHASEN,
-  MAX_WOCHE,
   GEBURTSDATUM,
   datumFuerWoche,
   formatDatum,
@@ -83,7 +82,6 @@ export function MutmachZentrale({
     100,
     Math.max(0, ((heuteWoche - aktuellePhase.von + 1) / phasenDauer) * 100),
   );
-  const gesamtFortschritt = Math.min(100, Math.max(0, (heuteWoche / MAX_WOCHE) * 100));
 
   const spruch =
     MUTMACH_SPRUECHE[
@@ -144,7 +142,7 @@ export function MutmachZentrale({
       <div className="mt-4">
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>Fortschritt in dieser Phase</span>
-          <span>{Math.round(gesamtFortschritt)} % der ersten 4 Jahre</span>
+          <span>{Math.round(phasenFortschritt)} %</span>
         </div>
         <div className="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-border">
           <div
