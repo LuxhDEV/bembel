@@ -1,7 +1,6 @@
 import { Moon, Sparkles, Sunrise, Trophy, HeartHandshake, CalendarHeart } from "lucide-react";
 import {
   PHASEN,
-  MAX_WOCHE,
   GEBURTSDATUM,
   datumFuerWoche,
   formatDatum,
