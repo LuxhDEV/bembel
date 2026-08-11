@@ -26,6 +26,11 @@ function tageDiff(a: Date, b: Date) {
   return Math.round((d1 - d2) / TAG_MS);
 }
 
+// Tägengenaue (gebrochene) Differenz für fließende Fortschrittsanzeigen.
+function tageDiffExact(a: Date, b: Date) {
+  return (a.getTime() - b.getTime()) / TAG_MS;
+}
+
 function Kachel({
   icon: Icon,
   label,
