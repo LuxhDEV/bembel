@@ -144,7 +144,7 @@ export function MutmachZentrale({
       <div className="mt-4">
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>Fortschritt in dieser Phase</span>
-          <span>{Math.round(gesamtFortschritt)} % der ersten 4 Jahre</span>
+          <span>{Math.round(phasenFortschritt)} %</span>
         </div>
         <div className="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-border">
           <div
