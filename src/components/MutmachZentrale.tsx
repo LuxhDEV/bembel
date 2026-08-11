@@ -142,10 +142,11 @@ export function MutmachZentrale({
           icon={CalendarHeart}
           label="Diese Phase"
           wert={`${Math.round(phasenFortschritt)} %`}
-          sub={`Woche ${aktuellePhase.von}–${aktuellePhase.bis} · noch ${Math.max(
-            0,
-            aktuellePhase.bis - heuteWoche,
-          )} Wochen`}
+          sub={`Woche ${aktuellePhase.von}–${aktuellePhase.bis} · ${
+            tageRest >= 14
+              ? `noch ${Math.floor(tageRest / 7)} Wochen`
+              : `noch ${Math.ceil(tageRest)} Tage`
+          }`}
         />
       </div>
 
