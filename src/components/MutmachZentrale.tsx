@@ -83,7 +83,6 @@ export function MutmachZentrale({
     100,
     Math.max(0, ((heuteWoche - aktuellePhase.von + 1) / phasenDauer) * 100),
   );
-  const gesamtFortschritt = Math.min(100, Math.max(0, (heuteWoche / MAX_WOCHE) * 100));
 
   const spruch =
     MUTMACH_SPRUECHE[
