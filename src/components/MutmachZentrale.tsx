@@ -1,4 +1,4 @@
-import { Moon, Sparkles, Sunrise, Trophy, HeartHandshake, CalendarHeart } from "lucide-react";
+import { Moon, Sparkles, Sunrise, Trophy, HeartHandshake, CalendarHeart, School } from "lucide-react";
 import {
   PHASEN,
   GEBURTSDATUM,
@@ -9,6 +9,7 @@ import {
 } from "@/data/lebenslinie";
 
 const TAG_MS = 1000 * 60 * 60 * 24;
+const KITA_BEGINN = new Date(2030, 5, 1); // 01.06.2030
 
 const MUTMACH_SPRUECHE = [
   "Du machst das gerade gut genug – und genug ist genau richtig.",
@@ -101,6 +102,14 @@ export function MutmachZentrale({
 
   const kuschelStunden = Math.round(geschaffteNaechte * 4);
 
+  // Kita-Beginn: 01.06.2030
+  const tageBisKita = Math.max(0, tageDiff(KITA_BEGINN, heute));
+  const kitaGesamtTage = Math.max(1, tageDiffExact(KITA_BEGINN, GEBURTSDATUM));
+  const kitaFortschritt = Math.min(
+    100,
+    Math.max(0, (tageDiffExact(heute, GEBURTSDATUM) / kitaGesamtTage) * 100),
+  );
+
   return (
     <section className="mt-6 rounded-3xl border border-border bg-card p-4 sm:p-5">
       <div className="flex items-center gap-2">
@@ -108,7 +117,7 @@ export function MutmachZentrale({
         <h2 className="text-sm font-semibold tracking-wide uppercase">Mutmach-Zentrale</h2>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <Kachel
           icon={Moon}
           label="Noch Nächte"
@@ -147,6 +156,12 @@ export function MutmachZentrale({
               ? `noch ${Math.floor(tageRest / 7)} Wochen`
               : `noch ${Math.ceil(tageRest)} Tage`
           }`}
+        />
+        <Kachel
+          icon={School}
+          label="Bis Kita-Beginn"
+          wert={`${tageBisKita} Nächte`}
+          sub={`01.06.2030 · ${Math.round(kitaFortschritt)} % der Kita-Vorbereitung geschafft`}
         />
       </div>
 
