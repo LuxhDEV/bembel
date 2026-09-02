@@ -1,4 +1,4 @@
-import { Moon, Sparkles, Sunrise, Trophy, HeartHandshake, CalendarHeart } from "lucide-react";
+import { Moon, Sparkles, Sunrise, Trophy, HeartHandshake, CalendarHeart, School } from "lucide-react";
 import {
   PHASEN,
   GEBURTSDATUM,
