@@ -117,7 +117,7 @@ export function MutmachZentrale({
         <h2 className="text-sm font-semibold tracking-wide uppercase">Mutmach-Zentrale</h2>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <Kachel
           icon={Moon}
           label="Noch Nächte"
