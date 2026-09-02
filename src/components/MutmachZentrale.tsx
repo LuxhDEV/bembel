@@ -102,6 +102,14 @@ export function MutmachZentrale({
 
   const kuschelStunden = Math.round(geschaffteNaechte * 4);
 
+  // Kita-Beginn: 01.06.2030
+  const tageBisKita = Math.max(0, tageDiff(KITA_BEGINN, heute));
+  const kitaGesamtTage = Math.max(1, tageDiffExact(KITA_BEGINN, GEBURTSDATUM));
+  const kitaFortschritt = Math.min(
+    100,
+    Math.max(0, (tageDiffExact(heute, GEBURTSDATUM) / kitaGesamtTage) * 100),
+  );
+
   return (
     <section className="mt-6 rounded-3xl border border-border bg-card p-4 sm:p-5">
       <div className="flex items-center gap-2">
