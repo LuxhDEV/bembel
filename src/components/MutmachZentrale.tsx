@@ -157,6 +157,12 @@ export function MutmachZentrale({
               : `noch ${Math.ceil(tageRest)} Tage`
           }`}
         />
+        <Kachel
+          icon={School}
+          label="Bis Kita-Beginn"
+          wert={`${tageBisKita} Nächte`}
+          sub={`01.06.2030 · ${Math.round(kitaFortschritt)} % der Kita-Vorbereitung geschafft`}
+        />
       </div>
 
       {/* Fortschrittsbalken Phase */}
