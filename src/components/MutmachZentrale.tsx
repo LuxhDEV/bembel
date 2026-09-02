@@ -161,7 +161,7 @@ export function MutmachZentrale({
           icon={School}
           label="Bis Kita-Beginn"
           wert={`${tageBisKita} Nächte`}
-          sub={`01.06.2030 · ${Math.round(kitaFortschritt)} % der Kita-Vorbereitung geschafft`}
+          sub={`01.06.2027 · ${Math.round(kitaFortschritt)} % der Kita-Vorbereitung geschafft`}
         />
       </div>
 
