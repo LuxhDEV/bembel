@@ -9,6 +9,7 @@ import {
 } from "@/data/lebenslinie";
 
 const TAG_MS = 1000 * 60 * 60 * 24;
+const KITA_BEGINN = new Date(2030, 5, 1); // 01.06.2030
 
 const MUTMACH_SPRUECHE = [
   "Du machst das gerade gut genug – und genug ist genau richtig.",
