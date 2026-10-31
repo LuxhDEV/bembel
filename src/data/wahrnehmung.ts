@@ -24,11 +24,22 @@ export function einheitAusSpeicher(wert: string | null | undefined): Einheit {
 
 export const STORAGE_KEYS = {
   ansicht: "bembel:ansicht",
+  bereich: "bembel:bereich",
   einheit: "bembel:einheit",
   wochenziel: "bembel:wochenziel",
 } as const;
 
 export type Ansicht = "nah" | "gesamt";
+
+export type Bereich = "heute" | "wochen" | "meilensteine" | "gesamt";
+
+export function bereichAusSpeicher(wert: string | null | undefined): Bereich {
+  if (wert === "heute" || wert === "wochen" || wert === "meilensteine" || wert === "gesamt") {
+    return wert;
+  }
+  if (wert === "nah") return "heute";
+  return "heute";
+}
 
 const SPRINT_LAENGE = 10;
 
@@ -185,21 +196,21 @@ export type Level = {
   nr: number;
   titel: string;
   emoji: string;
-  /** Gemeistert, sobald das Alter in Tagen diesen Wert erreicht. */
+  /** Geschafft, sobald das Alter in Tagen diesen Wert erreicht. */
   bisTag: number;
 };
 
 export const LEVELS: Level[] = [
-  { nr: 1, titel: "4. Trimester überlebt", emoji: "🛡️", bisTag: 84 },
+  { nr: 1, titel: "4. Trimester geschafft", emoji: "🌱", bisTag: 84 },
   { nr: 2, titel: "Die Brabbel-Explosion", emoji: "💬", bisTag: 112 },
   { nr: 3, titel: "Greifen und Lachen", emoji: "✨", bisTag: 140 },
   { nr: 4, titel: "Die erste Drehung", emoji: "🔄", bisTag: 168 },
   { nr: 5, titel: "Beikost-Neugier", emoji: "🥕", bisTag: 196 },
   { nr: 6, titel: "Sitzen mit Stolz", emoji: "🪑", bisTag: 230 },
   { nr: 7, titel: "Robben und Krabbeln", emoji: "🐛", bisTag: 270 },
-  { nr: 8, titel: "Kuckuck-Meisterin", emoji: "👀", bisTag: 300 },
+  { nr: 8, titel: "Kuckuck-Spiele", emoji: "👀", bisTag: 300 },
   { nr: 9, titel: "Hochziehen an Möbeln", emoji: "🪵", bisTag: 340 },
-  { nr: 10, titel: "Erstes Lebensjahr gemeistert", emoji: "🎂", bisTag: 365 },
+  { nr: 10, titel: "Erstes Lebensjahr geschafft", emoji: "🎂", bisTag: 365 },
   { nr: 11, titel: "Freie Schritte", emoji: "👟", bisTag: 430 },
   { nr: 12, titel: "Die ersten Wörter", emoji: "🗣️", bisTag: 500 },
   { nr: 13, titel: "Ein-Schlaf-Ära", emoji: "🌙", bisTag: 560 },

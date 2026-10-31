@@ -45,7 +45,7 @@ function ZielBisSonntag() {
   };
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="app-karte p-4">
       <label htmlFor="wochenziel" className="flex items-center gap-1.5 text-sm font-semibold">
         <Flag className="h-4 w-4 text-primary" />
         Was ist das Ziel bis Sonntag?
@@ -58,11 +58,11 @@ function ZielBisSonntag() {
         value={stand.text}
         onChange={(e) => speichern(e.target.value)}
         placeholder="z. B. ein Spaziergang, ein frühes Abendbrot, eine ruhige Stunde"
-        className="mt-3 w-full rounded-2xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary/60"
+        className="mt-3 min-h-12 w-full rounded-2xl border border-border bg-background px-3 py-3 text-base outline-none focus:border-primary/60"
       />
       {stand.gemeistert?.text ? (
         <p className="mt-3 rounded-2xl bg-calm-soft px-3 py-2 text-sm leading-snug">
-          Bis {formatDatum(new Date(stand.gemeistert.bis + "T12:00:00"))} gemeistert:{" "}
+          Bis {formatDatum(new Date(stand.gemeistert.bis + "T12:00:00"))} geschafft:{" "}
           {stand.gemeistert.text}
         </p>
       ) : null}
@@ -92,7 +92,7 @@ export function Nahfokus({
 
       <ZielBisSonntag />
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {wochen.map((woche) => {
           const phase = phaseFuerWoche(woche);
           const start = datumFuerWoche(woche);
@@ -104,8 +104,8 @@ export function Nahfokus({
               type="button"
               onClick={() => onWocheWaehlen(woche)}
               className={[
-                "rounded-3xl border bg-card p-4 text-left transition-shadow hover:shadow-sm",
-                istJetzt ? "border-foreground/40 shadow-sm" : "border-border",
+                "app-karte min-h-28 p-4 text-left transition-transform active:scale-[0.99]",
+                istJetzt ? "border-foreground/30" : "",
               ].join(" ")}
             >
               <div className="flex items-center justify-between gap-2">

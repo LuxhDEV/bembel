@@ -160,7 +160,7 @@ export const PHASEN: Phase[] = [
       "Pust- und Kitzelspiele für lautes Lachen",
     ],
     alltagstipps: [
-      "Regression aussitzen: sie dauert meist 2–6 Wochen",
+      "Diese Phase begleiten: sie dauert meist 2–6 Wochen",
       "Keine neuen Schlafexperimente mitten in der Regression",
       "Früher ins Bett, wenn nachts viel wach – Übermüdung verschlimmert alles",
     ],
@@ -260,7 +260,7 @@ export const PHASEN: Phase[] = [
       "Erste Wortversuche („Mama/Papa“)",
     ],
     motivation:
-      "Der 1. Geburtstag ist da! Ihr habt das intensivste Babyjahr erfolgreich gemeistert.",
+      "Der 1. Geburtstag ist da! Das erste Jahr habt ihr zusammen erlebt.",
     tags: ["regression", "schlaf"],
     wachfenster: "3–3,5 Stunden",
     schlafbedarf: "12–14 Std. pro Tag, 2 Schläfchen",

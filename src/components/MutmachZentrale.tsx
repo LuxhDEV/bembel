@@ -3,7 +3,6 @@ import {
   Moon,
   Sparkles,
   Sunrise,
-  HeartHandshake,
   CalendarHeart,
   School,
   ListChecks,
@@ -38,11 +37,11 @@ const KITA_BEGINN = new Date(2027, 5, 1); // 01.06.2027
 const MUTMACH_SPRUECHE = [
   "Du machst das gerade gut genug – und genug ist genau richtig.",
   "Kein Kind erinnert sich an eine aufgeräumte Wohnung, aber an ruhige Arme.",
-  "Jede durchwachte Nacht ist eine, die ihr schon gemeistert habt.",
-  "Diese Phase hat ein Ablaufdatum. Wirklich.",
+  "Jede Nacht, die ihr zusammen wach wart, hat euch näher gebracht.",
+  "Diese Phase geht vorbei – und ihr geht sie zusammen.",
   "Ihr seid kein Elternteam auf Probe – ihr seid genau das richtige Team.",
   "Heute reicht: satt, sauber, geliebt.",
-  "Fortschritt ist selten linear – Rückschritte gehören dazu.",
+  "Wachsen geht in Wellen – Pausen gehören dazu.",
 ];
 
 function tageDiff(a: Date, b: Date) {
@@ -70,12 +69,7 @@ function Kachel({
   akzent?: boolean;
 }) {
   return (
-    <div
-      className={[
-        "rounded-2xl border p-3",
-        akzent ? "border-primary/40 bg-primary/10" : "border-border bg-card",
-      ].join(" ")}
-    >
+    <div className={["app-karte p-4", akzent ? "border-primary/30 bg-primary/10" : ""].join(" ")}>
       <p className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
         <Icon className="h-3.5 w-3.5" /> {label}
       </p>
@@ -242,7 +236,7 @@ function KonfettiBadge({ sprint }: { sprint: number }) {
         ))}
       </span>
       <p className="relative text-sm font-semibold">
-        Sprint {sprint} geschafft – 10 von 10 Nächte gemeistert
+        Zehn Nächte voll – Runde {sprint} habt ihr zusammen erlebt
       </p>
     </div>
   );
@@ -251,11 +245,11 @@ function KonfettiBadge({ sprint }: { sprint: number }) {
 export function MutmachZentrale({
   heuteWoche,
   onPhaseWaehlen,
-  gesamtansicht = false,
+  bereich,
 }: {
   heuteWoche: number;
   onPhaseWaehlen: (woche: number) => void;
-  gesamtansicht?: boolean;
+  bereich: "heute" | "meilensteine" | "gesamt";
 }) {
   const heute = new Date();
   const aktuellePhase = phaseFuerWoche(heuteWoche);
@@ -298,35 +292,127 @@ export function MutmachZentrale({
   const ruheKlein = kleineZahl(naechteBisRuhe, einheit);
 
   const levels = levelStand(geschaffteNaechte);
-  const medalien = sichtbareLevel(geschaffteNaechte, gesamtansicht);
+  const alleLevel = bereich === "gesamt";
+  const medalien = sichtbareLevel(geschaffteNaechte, alleLevel);
   const zauber = naechsterZaubermoment(geschaffteNaechte);
 
+  const levelKette = (
+    <div>
+      <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+        Eure Level
+      </p>
+      {levels.aktuell ? (
+        <p className="mt-1 text-sm leading-snug">
+          Gerade Level {levels.aktuell.nr}: {levels.aktuell.titel} {levels.aktuell.emoji} – schon{" "}
+          {Math.round(levels.fortschritt)} % dieser Stufe
+        </p>
+      ) : (
+        <p className="mt-1 text-sm leading-snug">Alle Level geschafft – wie ihr gewachsen seid.</p>
+      )}
+      <ol className="mt-3 flex items-stretch gap-2 overflow-x-auto pb-1">
+        {medalien.map((level) => {
+          const erlebt = geschaffteNaechte >= level.bisTag;
+          const laeuft = levels.aktuell?.nr === level.nr;
+          return (
+            <li
+              key={level.nr}
+              className={[
+                "app-karte flex w-36 shrink-0 flex-col items-center px-2 py-3 text-center",
+                erlebt
+                  ? "border-primary/40 bg-primary/10"
+                  : laeuft
+                    ? "border-foreground/30"
+                    : "border-dashed opacity-70",
+              ].join(" ")}
+            >
+              <span className="text-2xl" aria-hidden>
+                {erlebt || laeuft ? level.emoji : "🔒"}
+              </span>
+              <span className="mt-1 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+                Level {level.nr}
+              </span>
+              <span className="mt-0.5 text-xs leading-snug font-semibold">{level.titel}</span>
+              <span className="mt-1 text-[10px] font-semibold text-muted-foreground">
+                {erlebt ? "geschafft" : laeuft ? "gerade" : "später"}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+      {!alleLevel && medalien.length < LEVELS.length ? (
+        <p className="mt-1 text-[11px] text-muted-foreground">
+          Die ganze Kette liegt in der Gesamtansicht.
+        </p>
+      ) : null}
+    </div>
+  );
+
+  const zauberKarte = zauber ? (
+    <div className="rounded-3xl border border-primary/30 bg-primary/10 p-4 shadow-[0_12px_30px_-22px_oklch(0.4_0.04_70/0.45)]">
+      <p className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+        <Sparkles className="h-3.5 w-3.5" /> Nächster Zaubermoment
+      </p>
+      <p className="mt-1 font-display text-lg leading-snug font-semibold">{zauber.moment.titel}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{ungefaehrIn(zauber.inTagen)}</p>
+      <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
+        Typisches, ungefähres Altersfenster – jedes Kind hat sein Tempo. Kein medizinischer Rat.
+      </p>
+    </div>
+  ) : null;
+
+  if (bereich === "meilensteine") {
+    return (
+      <section className="space-y-4">
+        <div className="app-karte p-4 sm:p-5">{levelKette}</div>
+        {zauberKarte}
+        {naechste ? (
+          <button
+            type="button"
+            onClick={() => onPhaseWaehlen(naechste.von)}
+            className="app-karte w-full p-4 text-left transition-transform active:scale-[0.99]"
+          >
+            <p className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+              <Sparkles className="h-3.5 w-3.5" /> Darauf dürft ihr euch freuen
+            </p>
+            <ul className="mt-2 space-y-1 text-sm leading-snug">
+              {naechste.meilensteine.slice(0, 3).map((m) => (
+                <li key={m} className="before:mr-1.5 before:content-['✦']">
+                  {m}
+                </li>
+              ))}
+            </ul>
+          </button>
+        ) : null}
+      </section>
+    );
+  }
+
+  if (bereich === "gesamt") {
+    return <section className="app-karte p-4 sm:p-5">{levelKette}</section>;
+  }
+
   return (
-    <section className="mt-6 rounded-3xl border border-border bg-card p-4 sm:p-5">
-      <div className="flex items-center gap-2">
-        <HeartHandshake className="h-4 w-4 text-primary" />
-        <h2 className="text-sm font-semibold tracking-wide uppercase">Mutmach-Zentrale</h2>
-      </div>
-
-      <div className="mt-4 rounded-2xl border border-primary/40 bg-primary/10 p-4">
+    <section className="space-y-4">
+      <div className="app-karte bg-primary/10 p-5 sm:p-6">
         <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-          Schon geschafft
+          Zusammen
         </p>
-        <p className="mt-1.5 font-display text-2xl leading-tight font-semibold sm:text-3xl">
-          bereits {geschaffteNaechte} Nächte gemeistert
+        <p className="mt-2 font-display text-5xl leading-none font-semibold sm:text-6xl">
+          {geschaffteNaechte}
         </p>
+        <p className="mt-2 text-lg font-medium">Nächte zusammen erlebt</p>
       </div>
 
-      <div className="mt-3 rounded-2xl border border-border bg-background/50 p-3">
+      <div className="app-karte p-4">
         <p className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-          <Moon className="h-3.5 w-3.5" /> Zehner-Sprint
+          <Moon className="h-3.5 w-3.5" /> Zehn Nächte
         </p>
         <p className="mt-1.5 font-display text-xl leading-snug font-semibold">
           {sprint.geschafft
-            ? "Nächster Sprint: Nacht 0 von 10 – frisch gestartet"
-            : `Aktueller Sprint: Nacht ${sprint.nacht} von 10 geschafft`}
+            ? "Neue zehn Nächte: ihr startet bei 0 – ganz in Ruhe"
+            : `Nacht ${sprint.nacht} von 10 zusammen erlebt`}
         </p>
-        <div className="mt-2 flex gap-1.5" aria-hidden>
+        <div className="mt-3 flex gap-1.5" aria-hidden>
           {Array.from({ length: sprint.von }, (_, i) => (
             <span
               key={i}
@@ -338,18 +424,18 @@ export function MutmachZentrale({
           ))}
         </div>
         <p className="sr-only">
-          {sprint.nacht} von {sprint.von} Nächten in diesem Sprint gemeistert
+          {sprint.nacht} von {sprint.von} Nächten in diesen zehn Nächten erlebt
         </p>
         {sprint.geschafft && sprint.abgeschlossenerSprint !== null ? (
           <KonfettiBadge sprint={sprint.abgeschlossenerSprint} />
         ) : null}
       </div>
 
-      <div className="mt-4">
+      <div>
         <div
           role="radiogroup"
           aria-label="Einheit für die verbleibende Zeit"
-          className="flex flex-wrap gap-1.5"
+          className="flex flex-wrap gap-2"
         >
           {EINHEITEN.map((option) => {
             const aktiv = einheit === option.id;
@@ -361,9 +447,9 @@ export function MutmachZentrale({
                 aria-checked={aktiv}
                 onClick={() => setEinheit(option.id)}
                 className={[
-                  "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
+                  "min-h-11 rounded-full border px-4 text-sm font-semibold transition-colors",
                   aktiv
-                    ? "border-primary bg-primary text-primary-foreground"
+                    ? "border-primary bg-primary text-primary-foreground shadow-sm"
                     : "border-border bg-card text-muted-foreground hover:bg-accent",
                 ].join(" ")}
               >
@@ -372,23 +458,25 @@ export function MutmachZentrale({
             );
           })}
         </div>
-        <p className="mt-1.5 text-xs text-muted-foreground">Dieselbe Strecke, kleinere Zahlen.</p>
+        <p className="mt-1.5 text-xs text-muted-foreground">Dieselbe Zeit, in kleineren Zahlen.</p>
       </div>
 
-      <div className="mt-3 grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-3">
         <Kachel
           icon={School}
           label="Weg zur Kita"
           akzent
           wert={tageBisKita === 0 ? "Geschafft" : kitaKlein.satz}
-          sub={`01.06.2027 · schon ${Math.round(kitaFortschritt)} % dieser Zeit gemeistert`}
+          sub={`01.06.2027 · schon ${Math.round(kitaFortschritt)} % dieses Weges zusammen`}
         />
         <Kachel
           icon={CalendarHeart}
           label="Nächster Abschnitt"
-          wert={naechste ? (naechteBisNaechste === 0 ? "Jetzt" : phaseKlein.satz) : "Gemeistert"}
+          wert={naechste ? (naechteBisNaechste === 0 ? "Jetzt" : phaseKlein.satz) : "Ihr seid da"}
           sub={
-            naechste ? `bis „${naechste.titel}“` : "Ihr habt die komplette Lebenslinie geschafft."
+            naechste
+              ? `bis „${naechste.titel}“`
+              : "Ihr habt die komplette Lebenslinie zusammen erlebt."
           }
         />
         <Kachel
@@ -405,60 +493,11 @@ export function MutmachZentrale({
         />
       </div>
 
-      <div className="mt-4">
-        <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-          Gemeisterte Level
-        </p>
-        {levels.aktuell ? (
-          <p className="mt-1 text-sm leading-snug">
-            Gerade Level {levels.aktuell.nr}: {levels.aktuell.titel} {levels.aktuell.emoji} – schon{" "}
-            {Math.round(levels.fortschritt)} % geschafft
-          </p>
-        ) : (
-          <p className="mt-1 text-sm leading-snug">Alle Level gemeistert.</p>
-        )}
-        <ol className="mt-2 flex items-stretch gap-2 overflow-x-auto pb-1">
-          {medalien.map((level) => {
-            const gemeistert = geschaffteNaechte >= level.bisTag;
-            const laeuft = levels.aktuell?.nr === level.nr;
-            return (
-              <li
-                key={level.nr}
-                className={[
-                  "flex w-36 shrink-0 flex-col items-center rounded-2xl border px-2 py-3 text-center",
-                  gemeistert
-                    ? "border-primary/40 bg-primary/10"
-                    : laeuft
-                      ? "border-foreground/30 bg-card"
-                      : "border-dashed border-border opacity-60",
-                ].join(" ")}
-              >
-                <span className="text-2xl" aria-hidden>
-                  {gemeistert || laeuft ? level.emoji : "🔒"}
-                </span>
-                <span className="mt-1 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
-                  Level {level.nr}
-                </span>
-                <span className="mt-0.5 text-xs leading-snug font-semibold">{level.titel}</span>
-                <span className="mt-1 text-[10px] font-semibold text-muted-foreground">
-                  {gemeistert ? "gemeistert" : laeuft ? "läuft" : "wartet"}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-        {!gesamtansicht && medalien.length < LEVELS.length ? (
-          <p className="mt-1 text-[11px] text-muted-foreground">
-            Weitere Medaillen liegen in der Gesamtansicht.
-          </p>
-        ) : null}
-      </div>
-
       <KitaEtappen heute={heute} einheit={einheit} />
 
-      <div className="mt-4">
+      <div className="app-karte p-4">
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Diese Phase: schon {Math.round(phasenFortschritt)} % gemeistert</span>
+          <span>Diese Phase: schon {Math.round(phasenFortschritt)} % zusammen</span>
           <span>{Math.round(phasenFortschritt)} %</span>
         </div>
         <div className="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-border">
@@ -470,42 +509,9 @@ export function MutmachZentrale({
         <p className="mt-1 text-xs text-muted-foreground">{aktuellePhase.titel}</p>
       </div>
 
-      {zauber ? (
-        <div className="mt-4 rounded-2xl border border-primary/40 bg-primary/10 p-3">
-          <p className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-            <Sparkles className="h-3.5 w-3.5" /> Nächster Zaubermoment
-          </p>
-          <p className="mt-1 text-sm leading-snug font-medium">
-            {zauber.moment.titel} ({ungefaehrIn(zauber.inTagen)})
-          </p>
-          <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
-            Typisches, ungefähres Altersfenster – jedes Kind hat sein Tempo. Kein medizinischer Rat.
-          </p>
-        </div>
-      ) : null}
+      {zauberKarte}
 
-      {naechste ? (
-        <button
-          type="button"
-          onClick={() => onPhaseWaehlen(naechste.von)}
-          className="mt-4 w-full rounded-2xl border border-border bg-accent/40 p-3 text-left transition-colors hover:bg-accent"
-        >
-          <p className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-            <Sparkles className="h-3.5 w-3.5" /> Darauf dürft ihr euch freuen
-          </p>
-          <ul className="mt-1.5 space-y-0.5 text-sm leading-snug">
-            {naechste.meilensteine.slice(0, 3).map((m) => (
-              <li key={m} className="before:mr-1.5 before:content-['✦']">
-                {m}
-              </li>
-            ))}
-          </ul>
-        </button>
-      ) : null}
-
-      <p className="mt-4 rounded-2xl bg-calm-soft p-3 text-sm leading-snug font-medium">
-        „{spruch}“
-      </p>
+      <p className="rounded-3xl bg-calm-soft p-4 text-sm leading-snug font-medium">„{spruch}“</p>
     </section>
   );
 }
