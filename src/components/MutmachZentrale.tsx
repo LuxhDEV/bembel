@@ -103,7 +103,7 @@ function KitaEtappen({ heute }: { heute: Date }) {
           const naechste = i === naechsteIdx;
           let zwischen: number | null = null;
           if (!vorbei && i > 0 && i !== naechsteIdx) {
-            zwischen = tageDiff(e.datum, etappen[i - 1].datum);
+            zwischen = tageDiff(e.datum, etappen[i - 1]!.datum);
           }
           return (
             <li
