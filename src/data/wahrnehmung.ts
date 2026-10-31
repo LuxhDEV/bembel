@@ -3,14 +3,24 @@
  * Altersangaben sind typische, ungefähre Fenster – kein medizinischer Rat.
  */
 
-export type Einheit = "tage" | "wochen" | "wochenenden" | "monate";
+export type Einheit = "tage" | "wochen" | "monate";
 
 export const EINHEITEN: { id: Einheit; label: string }[] = [
   { id: "tage", label: "Tage" },
   { id: "wochen", label: "Wochen" },
-  { id: "wochenenden", label: "Wochenenden" },
   { id: "monate", label: "Monate" },
 ];
+
+/** Gespeicherte Altwerte, die es im Umschalter nicht mehr gibt. */
+const VERALTETE_EINHEIT: Record<string, Einheit> = {
+  wochenenden: "wochen",
+};
+
+export function einheitAusSpeicher(wert: string | null | undefined): Einheit {
+  if (wert && wert in VERALTETE_EINHEIT) return VERALTETE_EINHEIT[wert]!;
+  if (wert && EINHEITEN.some((einheit) => einheit.id === wert)) return wert as Einheit;
+  return "wochen";
+}
 
 export const STORAGE_KEYS = {
   ansicht: "bembel:ansicht",
@@ -68,7 +78,7 @@ function wort(n: number, eins: string, viele: string) {
 export type KleineZahl = {
   zahl: number;
   wort: string;
-  /** z. B. „Noch 30 Wochenenden“ oder „Nur noch 7 Monate“ */
+  /** z. B. „Noch 30 Wochen“ oder „Nur noch 7 Monate“ */
   satz: string;
 };
 
@@ -91,10 +101,6 @@ export function kleineZahl(tage: number, einheit: Einheit): KleineZahl {
     zahl = wochen;
     einheitWort = wochen === 1 ? "Woche" : "Wochen";
     verwendet = "wochen";
-  } else if (einheit === "wochenenden" && wochen >= 1) {
-    zahl = wochen;
-    einheitWort = wochen === 1 ? "Wochenende" : "Wochenenden";
-    verwendet = "wochenenden";
   } else if (einheit === "monate") {
     if (monate >= 1) {
       zahl = monate;

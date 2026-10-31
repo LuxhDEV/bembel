@@ -8,7 +8,6 @@ import {
   School,
   ListChecks,
   ChevronUp,
-  Heart,
 } from "lucide-react";
 import {
   PHASEN,
@@ -22,6 +21,7 @@ import {
   EINHEITEN,
   STORAGE_KEYS,
   LEVELS,
+  einheitAusSpeicher,
   kleineZahl,
   levelStand,
   naechsterZaubermoment,
@@ -248,10 +248,6 @@ function KonfettiBadge({ sprint }: { sprint: number }) {
   );
 }
 
-function istEinheit(wert: string): wert is Einheit {
-  return EINHEITEN.some((einheit) => einheit.id === wert);
-}
-
 export function MutmachZentrale({
   heuteWoche,
   onPhaseWaehlen,
@@ -287,10 +283,9 @@ export function MutmachZentrale({
     MUTMACH_SPRUECHE[Math.floor(heute.getTime() / TAG_MS) % MUTMACH_SPRUECHE.length] ??
     MUTMACH_SPRUECHE[0];
 
-  const kuschelStunden = Math.round(geschaffteNaechte * 4);
   const sprint = sprintStand(geschaffteNaechte);
-  const [einheitRoh, setEinheit] = useStoredString(STORAGE_KEYS.einheit, "wochenenden");
-  const einheit: Einheit = istEinheit(einheitRoh) ? einheitRoh : "wochenenden";
+  const [einheitRoh, setEinheit] = useStoredString(STORAGE_KEYS.einheit, "wochen");
+  const einheit: Einheit = einheitAusSpeicher(einheitRoh);
 
   const tageBisKita = Math.max(0, tageDiff(KITA_BEGINN, heute));
   const kitaGesamtTage = Math.max(1, tageDiffExact(KITA_BEGINN, GEBURTSDATUM));
@@ -313,26 +308,13 @@ export function MutmachZentrale({
         <h2 className="text-sm font-semibold tracking-wide uppercase">Mutmach-Zentrale</h2>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-2xl border border-primary/40 bg-primary/10 p-4">
-          <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-            Schon geschafft
-          </p>
-          <p className="mt-1.5 font-display text-2xl leading-tight font-semibold sm:text-3xl">
-            bereits {geschaffteNaechte} Nächte gemeistert
-          </p>
-        </div>
-        <div className="rounded-2xl border border-growth/40 bg-growth-soft p-4">
-          <p className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-            <Heart className="h-3.5 w-3.5" /> Gewonnene Zeit
-          </p>
-          <p className="mt-1.5 font-display text-4xl leading-none font-semibold">
-            {kuschelStunden}
-          </p>
-          <p className="mt-1 text-sm leading-snug">
-            Kuschelstunden – Tragen, Trösten, Dicht-dran-sein.
-          </p>
-        </div>
+      <div className="mt-4 rounded-2xl border border-primary/40 bg-primary/10 p-4">
+        <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+          Schon geschafft
+        </p>
+        <p className="mt-1.5 font-display text-2xl leading-tight font-semibold sm:text-3xl">
+          bereits {geschaffteNaechte} Nächte gemeistert
+        </p>
       </div>
 
       <div className="mt-3 rounded-2xl border border-border bg-background/50 p-3">
