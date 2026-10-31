@@ -103,6 +103,7 @@ function KitaEtappen({ heute, einheit }: { heute: Date; einheit: Einheit }) {
     { titel: "Silvester", datum: new Date(2026, 11, 31), emoji: "🎆" },
     { titel: "Urlaub", datum: new Date(2027, 0, 10), emoji: "🏖️" },
     { titel: "Mamas Geburtstag", datum: new Date(2027, 0, 21), emoji: "💐" },
+    { titel: "Erstes neues Gehalt", datum: new Date(2027, 0, 28), emoji: "💶" },
     { titel: "Tage werden spürbar länger (Lichtmess)", datum: new Date(2027, 1, 2), emoji: "🕯️" },
     { titel: "2/3 der Zeit geschafft", datum: anteil(2 / 3), emoji: "💪" },
     {
