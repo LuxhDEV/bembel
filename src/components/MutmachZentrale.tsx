@@ -66,15 +66,20 @@ function KitaEtappen({ heute }: { heute: Date }) {
   const ende = KITA_BEGINN.getTime();
   const anteil = (f: number) => new Date(start + (ende - start) * f);
   const etappen: { titel: string; datum: Date; emoji: string }[] = [
+    { titel: "Herbstanfang", datum: new Date(2026, 8, 23), emoji: "🍂" },
+    { titel: "Winterzeit: früher dunkel, dafür morgens heller", datum: new Date(2026, 9, 25), emoji: "🕰️" },
     { titel: "Halbzeit bis zur Kita", datum: anteil(1 / 2), emoji: "⚖️" },
+    { titel: "Kürzester Tag – ab jetzt werden die Tage wieder länger", datum: new Date(2026, 11, 21), emoji: "🌅" },
     { titel: "Weihnachten", datum: new Date(2026, 11, 24), emoji: "🎄" },
     { titel: "Baby wird ½ Jahr alt", datum: new Date(2026, 11, 30), emoji: "🎂" },
     { titel: "Silvester", datum: new Date(2026, 11, 31), emoji: "🎆" },
     { titel: "Urlaub", datum: new Date(2027, 0, 10), emoji: "🏖️" },
     { titel: "Mamas Geburtstag", datum: new Date(2027, 0, 21), emoji: "💐" },
+    { titel: "Tage werden spürbar länger (Lichtmess)", datum: new Date(2027, 1, 2), emoji: "🕯️" },
     { titel: "2/3 der Zeit geschafft", datum: anteil(2 / 3), emoji: "💪" },
     { titel: "Nur noch 100 Nächte", datum: new Date(ende - 100 * TAG_MS), emoji: "💯" },
     { titel: "Frühlingsanfang", datum: new Date(2027, 2, 20), emoji: "🌷" },
+    { titel: "Sommerzeit: abends wieder lange hell", datum: new Date(2027, 2, 28), emoji: "☀️" },
     { titel: "Ostern", datum: new Date(2027, 2, 28), emoji: "🐣" },
     { titel: "3/4 der Zeit geschafft", datum: anteil(3 / 4), emoji: "🚀" },
     { titel: "Nur noch ein Monat", datum: new Date(2027, 4, 1), emoji: "📅" },
@@ -85,53 +90,37 @@ function KitaEtappen({ heute }: { heute: Date }) {
 
   const naechsteIdx = etappen.findIndex((e) => tageDiff(e.datum, heute) >= 0);
   const geschafft = naechsteIdx === -1 ? etappen.length : naechsteIdx;
+  const naechste = naechsteIdx === -1 ? null : etappen[naechsteIdx];
+  const n = naechste ? tageDiff(naechste.datum, heute) : 0;
 
   return (
     <div className="mt-4 rounded-2xl border border-border bg-background/50 p-3">
       <p className="flex items-center justify-between text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
         <span className="flex items-center gap-1.5">
-          <School className="h-3.5 w-3.5" /> Etappen bis zur Kita
+          <School className="h-3.5 w-3.5" /> Nächste Etappe bis zur Kita
         </span>
         <span>
           {geschafft} / {etappen.length} geschafft
         </span>
       </p>
-      <ol className="mt-2 grid gap-1.5 sm:grid-cols-2">
-        {etappen.map((e, i) => {
-          const n = tageDiff(e.datum, heute);
-          const vorbei = n < 0;
-          const naechste = i === naechsteIdx;
-          let zwischen: number | null = null;
-          if (!vorbei && i > 0 && i !== naechsteIdx) {
-            zwischen = tageDiff(e.datum, etappen[i - 1]!.datum);
-          }
-          return (
-            <li
-              key={e.titel}
-              className={[
-                "flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-sm",
-                naechste
-                  ? "border border-primary/40 bg-primary/10 font-semibold"
-                  : vorbei
-                    ? "text-muted-foreground line-through opacity-60"
-                    : "bg-card",
-              ].join(" ")}
-            >
-              <span aria-hidden>{vorbei ? "✅" : e.emoji}</span>
-              <span className="flex-1 leading-tight">
-                {e.titel}
-                <span className="block text-[11px] font-normal text-muted-foreground no-underline">
-                  {formatDatum(e.datum)}
-                  {zwischen !== null ? ` · ${zwischen} Nächte nach der Etappe davor` : ""}
-                </span>
-              </span>
-              <span className="font-display whitespace-nowrap">
-                {vorbei ? "geschafft" : n === 0 ? "Heute!" : `${n} Nächte`}
-              </span>
-            </li>
-          );
-        })}
-      </ol>
+      {naechste ? (
+        <div className="mt-2 flex items-center gap-3 rounded-xl border border-primary/40 bg-primary/10 px-3 py-2.5">
+          <span className="text-2xl" aria-hidden>
+            {naechste.emoji}
+          </span>
+          <div className="flex-1 leading-tight">
+            <p className="text-sm font-semibold">{naechste.titel}</p>
+            <p className="text-[11px] text-muted-foreground">{formatDatum(naechste.datum)}</p>
+          </div>
+          <p className="font-display text-lg font-semibold whitespace-nowrap">
+            {n === 0 ? "Heute!" : `${n} Nächte`}
+          </p>
+        </div>
+      ) : (
+        <p className="mt-2 rounded-xl bg-calm-soft px-3 py-2.5 text-sm font-medium">
+          Alle Etappen geschafft – die Kita kann kommen! 🎉
+        </p>
+      )}
     </div>
   );
 }
