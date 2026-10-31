@@ -63,6 +63,7 @@ function Kachel({
 }
 
 function KitaEtappen({ heute }: { heute: Date }) {
+  const [alleAnzeigen, setAlleAnzeigen] = useState(false);
   const start = GEBURTSDATUM.getTime();
   const ende = KITA_BEGINN.getTime();
   const anteil = (f: number) => new Date(start + (ende - start) * f);
