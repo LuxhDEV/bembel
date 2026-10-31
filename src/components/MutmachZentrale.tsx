@@ -1,4 +1,5 @@
-import { Moon, Sparkles, Sunrise, Trophy, HeartHandshake, CalendarHeart, School } from "lucide-react";
+import { useState } from "react";
+import { Moon, Sparkles, Sunrise, Trophy, HeartHandshake, CalendarHeart, School, ListChecks, ChevronUp } from "lucide-react";
 import {
   PHASEN,
   GEBURTSDATUM,
@@ -69,6 +70,7 @@ function KitaEtappen({ heute }: { heute: Date }) {
     { titel: "Herbstanfang", datum: new Date(2026, 8, 23), emoji: "🍂" },
     { titel: "Winterzeit: früher dunkel, dafür morgens heller", datum: new Date(2026, 9, 25), emoji: "🕰️" },
     { titel: "Halbzeit bis zur Kita", datum: anteil(1 / 2), emoji: "⚖️" },
+    { titel: "Nikolaus", datum: new Date(2026, 11, 6), emoji: "🎅" },
     { titel: "Kürzester Tag – ab jetzt werden die Tage wieder länger", datum: new Date(2026, 11, 21), emoji: "🌅" },
     { titel: "Weihnachten", datum: new Date(2026, 11, 24), emoji: "🎄" },
     { titel: "Baby wird ½ Jahr alt", datum: new Date(2026, 11, 30), emoji: "🎂" },
