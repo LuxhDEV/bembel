@@ -1,4 +1,5 @@
-import { Moon, Sparkles, Sunrise, Trophy, HeartHandshake, CalendarHeart, School } from "lucide-react";
+import { useState } from "react";
+import { Moon, Sparkles, Sunrise, Trophy, HeartHandshake, CalendarHeart, School, ListChecks, ChevronUp } from "lucide-react";
 import {
   PHASEN,
   GEBURTSDATUM,
@@ -62,6 +63,7 @@ function Kachel({
 }
 
 function KitaEtappen({ heute }: { heute: Date }) {
+  const [alleAnzeigen, setAlleAnzeigen] = useState(false);
   const start = GEBURTSDATUM.getTime();
   const ende = KITA_BEGINN.getTime();
   const anteil = (f: number) => new Date(start + (ende - start) * f);
@@ -69,6 +71,7 @@ function KitaEtappen({ heute }: { heute: Date }) {
     { titel: "Herbstanfang", datum: new Date(2026, 8, 23), emoji: "🍂" },
     { titel: "Winterzeit: früher dunkel, dafür morgens heller", datum: new Date(2026, 9, 25), emoji: "🕰️" },
     { titel: "Halbzeit bis zur Kita", datum: anteil(1 / 2), emoji: "⚖️" },
+    { titel: "Nikolaus", datum: new Date(2026, 11, 6), emoji: "🎅" },
     { titel: "Kürzester Tag – ab jetzt werden die Tage wieder länger", datum: new Date(2026, 11, 21), emoji: "🌅" },
     { titel: "Weihnachten", datum: new Date(2026, 11, 24), emoji: "🎄" },
     { titel: "Baby wird ½ Jahr alt", datum: new Date(2026, 11, 30), emoji: "🎂" },
@@ -78,6 +81,7 @@ function KitaEtappen({ heute }: { heute: Date }) {
     { titel: "Tage werden spürbar länger (Lichtmess)", datum: new Date(2027, 1, 2), emoji: "🕯️" },
     { titel: "2/3 der Zeit geschafft", datum: anteil(2 / 3), emoji: "💪" },
     { titel: "Nur noch 100 Nächte", datum: new Date(ende - 100 * TAG_MS), emoji: "💯" },
+    { titel: "Nur noch 50 Nächte", datum: new Date(ende - 50 * TAG_MS), emoji: "🌟" },
     { titel: "Frühlingsanfang", datum: new Date(2027, 2, 20), emoji: "🌷" },
     { titel: "Sommerzeit: abends wieder lange hell", datum: new Date(2027, 2, 28), emoji: "☀️" },
     { titel: "Ostern", datum: new Date(2027, 2, 28), emoji: "🐣" },
@@ -121,6 +125,58 @@ function KitaEtappen({ heute }: { heute: Date }) {
           Alle Etappen geschafft – die Kita kann kommen! 🎉
         </p>
       )}
+
+      <button
+        type="button"
+        onClick={() => setAlleAnzeigen((v) => !v)}
+        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent"
+      >
+        {alleAnzeigen ? (
+          <>
+            <ChevronUp className="h-3.5 w-3.5" /> Nur die nächste Etappe anzeigen
+          </>
+        ) : (
+          <>
+            <ListChecks className="h-3.5 w-3.5" /> Alle {etappen.length} Etappen anzeigen
+          </>
+        )}
+      </button>
+
+      {alleAnzeigen ? (
+        <ul className="mt-2 space-y-1">
+          {etappen.map((e, i) => {
+            const geschafftEtappe = i < geschafft;
+            const istNaechste = i === naechsteIdx;
+            const diff = tageDiff(e.datum, heute);
+            return (
+              <li
+                key={`${e.titel}-${e.datum.getTime()}`}
+                className={[
+                  "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm leading-tight",
+                  istNaechste
+                    ? "border border-primary/40 bg-primary/10 font-semibold"
+                    : geschafftEtappe
+                      ? "text-muted-foreground"
+                      : "bg-background/60",
+                ].join(" ")}
+              >
+                <span className="text-lg" aria-hidden>
+                  {geschafftEtappe ? "✅" : e.emoji}
+                </span>
+                <span className="flex-1">
+                  {e.titel}
+                  <span className="block text-[11px] font-normal text-muted-foreground">
+                    {formatDatum(e.datum)}
+                  </span>
+                </span>
+                <span className="text-xs font-semibold whitespace-nowrap">
+                  {geschafftEtappe ? "geschafft" : diff === 0 ? "Heute!" : `${diff} Nächte`}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
     </div>
   );
 }
