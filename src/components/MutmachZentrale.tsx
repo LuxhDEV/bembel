@@ -125,6 +125,58 @@ function KitaEtappen({ heute }: { heute: Date }) {
           Alle Etappen geschafft – die Kita kann kommen! 🎉
         </p>
       )}
+
+      <button
+        type="button"
+        onClick={() => setAlleAnzeigen((v) => !v)}
+        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent"
+      >
+        {alleAnzeigen ? (
+          <>
+            <ChevronUp className="h-3.5 w-3.5" /> Nur die nächste Etappe anzeigen
+          </>
+        ) : (
+          <>
+            <ListChecks className="h-3.5 w-3.5" /> Alle {etappen.length} Etappen anzeigen
+          </>
+        )}
+      </button>
+
+      {alleAnzeigen ? (
+        <ul className="mt-2 space-y-1">
+          {etappen.map((e, i) => {
+            const geschafftEtappe = i < geschafft;
+            const istNaechste = i === naechsteIdx;
+            const diff = tageDiff(e.datum, heute);
+            return (
+              <li
+                key={`${e.titel}-${e.datum.getTime()}`}
+                className={[
+                  "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm leading-tight",
+                  istNaechste
+                    ? "border border-primary/40 bg-primary/10 font-semibold"
+                    : geschafftEtappe
+                      ? "text-muted-foreground"
+                      : "bg-background/60",
+                ].join(" ")}
+              >
+                <span className="text-lg" aria-hidden>
+                  {geschafftEtappe ? "✅" : e.emoji}
+                </span>
+                <span className="flex-1">
+                  {e.titel}
+                  <span className="block text-[11px] font-normal text-muted-foreground">
+                    {formatDatum(e.datum)}
+                  </span>
+                </span>
+                <span className="text-xs font-semibold whitespace-nowrap">
+                  {geschafftEtappe ? "geschafft" : diff === 0 ? "Heute!" : `${diff} Nächte`}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
     </div>
   );
 }
