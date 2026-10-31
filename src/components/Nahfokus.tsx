@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { CalendarHeart, Flag } from "lucide-react";
 
+import { istGoldeneWoche } from "@/data/etappen";
+import { KonfettiFeld } from "@/components/FeierOverlay";
 import {
   STORAGE_KEYS,
   isoTag,
@@ -11,38 +13,29 @@ import {
 } from "@/data/wahrnehmung";
 import { MAX_WOCHE, datumFuerWoche, formatDatum, phaseFuerWoche } from "@/data/lebenslinie";
 
-function ZielBisSonntag() {
-  const heute = new Date();
-  const tagKey = isoTag(new Date(heute.getFullYear(), heute.getMonth(), heute.getDate()));
+function zielOhneLeereFlags(
+  stand: WochenzielSpeicher,
+  text: string,
+  erledigt: boolean,
+): WochenzielSpeicher {
+  const next: WochenzielSpeicher = { bis: stand.bis, text };
+  if (stand.gemeistert) next.gemeistert = stand.gemeistert;
+  if (erledigt) next.erledigt = true;
+  return next;
+}
+
+function ZielBisSonntag({
+  heute,
+  stand,
+  onText,
+  onAbhaken,
+}: {
+  heute: Date;
+  stand: WochenzielSpeicher;
+  onText: (text: string) => void;
+  onAbhaken: (erledigt: boolean) => void;
+}) {
   const sonntag = sonntagDieserWoche(heute);
-  const [stand, setStand] = useState<WochenzielSpeicher>(() => wochenzielLaden(null, heute));
-
-  useEffect(() => {
-    const jetzt = new Date();
-    let roh: string | null = null;
-    try {
-      roh = localStorage.getItem(STORAGE_KEYS.wochenziel);
-    } catch {
-      roh = null;
-    }
-    const geladen = wochenzielLaden(roh, jetzt);
-    setStand(geladen);
-    try {
-      localStorage.setItem(STORAGE_KEYS.wochenziel, JSON.stringify(geladen));
-    } catch {
-      /* privater Modus */
-    }
-  }, [tagKey]);
-
-  const speichern = (text: string) => {
-    const next: WochenzielSpeicher = { ...stand, text };
-    setStand(next);
-    try {
-      localStorage.setItem(STORAGE_KEYS.wochenziel, JSON.stringify(next));
-    } catch {
-      /* privater Modus */
-    }
-  };
 
   return (
     <div className="app-karte p-4">
@@ -56,10 +49,19 @@ function ZielBisSonntag() {
       <input
         id="wochenziel"
         value={stand.text}
-        onChange={(e) => speichern(e.target.value)}
+        onChange={(e) => onText(e.target.value)}
         placeholder="z. B. ein Spaziergang, ein frühes Abendbrot, eine ruhige Stunde"
         className="mt-3 min-h-12 w-full rounded-2xl border border-border bg-background px-3 py-3 text-base outline-none focus:border-primary/60"
       />
+      <label className="mt-3 flex min-h-11 items-center gap-3 text-sm font-semibold">
+        <input
+          type="checkbox"
+          checked={stand.erledigt === true}
+          onChange={(e) => onAbhaken(e.target.checked)}
+          className="h-5 w-5 accent-primary"
+        />
+        Diese Woche geschafft
+      </label>
       {stand.gemeistert?.text ? (
         <p className="mt-3 rounded-2xl bg-calm-soft px-3 py-2 text-sm leading-snug">
           Bis {formatDatum(new Date(stand.gemeistert.bis + "T12:00:00"))} geschafft:{" "}
@@ -71,12 +73,43 @@ function ZielBisSonntag() {
 }
 
 export function Nahfokus({
+  heute,
   heuteWoche,
   onWocheWaehlen,
 }: {
+  heute: Date;
   heuteWoche: number;
   onWocheWaehlen: (woche: number) => void;
 }) {
+  const tagKey = isoTag(heute);
+  const [stand, setStand] = useState<WochenzielSpeicher>(() => wochenzielLaden(null, heute));
+  const [konfetti, setKonfetti] = useState(false);
+
+  useEffect(() => {
+    let roh: string | null = null;
+    try {
+      roh = localStorage.getItem(STORAGE_KEYS.wochenziel);
+    } catch {
+      roh = null;
+    }
+    const geladen = wochenzielLaden(roh, heute);
+    setStand(geladen);
+    try {
+      localStorage.setItem(STORAGE_KEYS.wochenziel, JSON.stringify(geladen));
+    } catch {
+      /* privater Modus */
+    }
+  }, [tagKey, heute]);
+
+  const schreiben = (next: WochenzielSpeicher) => {
+    setStand(next);
+    try {
+      localStorage.setItem(STORAGE_KEYS.wochenziel, JSON.stringify(next));
+    } catch {
+      /* privater Modus */
+    }
+  };
+
   const wochen = [0, 1, 2, 3]
     .map((versatz) => heuteWoche + versatz)
     .filter((woche) => woche >= 0 && woche <= MAX_WOCHE);
@@ -90,7 +123,15 @@ export function Nahfokus({
         </h2>
       </div>
 
-      <ZielBisSonntag />
+      <ZielBisSonntag
+        heute={heute}
+        stand={stand}
+        onText={(text) => schreiben(zielOhneLeereFlags(stand, text, stand.erledigt === true))}
+        onAbhaken={(erledigt) => {
+          schreiben(zielOhneLeereFlags(stand, stand.text, erledigt));
+          if (erledigt) setKonfetti(true);
+        }}
+      />
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {wochen.map((woche) => {
@@ -98,29 +139,40 @@ export function Nahfokus({
           const start = datumFuerWoche(woche);
           const ende = new Date(datumFuerWoche(woche + 1).getTime() - 86400000);
           const istJetzt = woche === heuteWoche;
+          const golden = istGoldeneWoche(woche);
           return (
             <button
               key={woche}
               type="button"
               onClick={() => onWocheWaehlen(woche)}
+              data-goldene-woche={golden ? "ja" : "nein"}
               className={[
                 "app-karte min-h-28 p-4 text-left transition-transform active:scale-[0.99]",
                 istJetzt ? "border-foreground/30" : "",
+                golden ? "goldene-woche" : "",
               ].join(" ")}
             >
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
                   {formatDatum(start)} – {formatDatum(ende)}
                 </p>
-                {istJetzt ? (
-                  <span className="rounded-full bg-foreground px-2 py-0.5 text-[10px] font-bold text-background">
-                    Diese Woche
-                  </span>
-                ) : (
-                  <span className="text-[10px] font-semibold text-muted-foreground">
-                    Lebenswoche {woche}
-                  </span>
-                )}
+                <span className="flex flex-wrap items-center justify-end gap-1">
+                  {golden ? <span className="goldene-woche-plakette">Goldene Woche</span> : null}
+                  {istJetzt && stand.erledigt ? (
+                    <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold">
+                      ✓ geschafft
+                    </span>
+                  ) : null}
+                  {istJetzt ? (
+                    <span className="rounded-full bg-foreground px-2 py-0.5 text-[10px] font-bold text-background">
+                      Diese Woche
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-semibold text-muted-foreground">
+                      Lebenswoche {woche}
+                    </span>
+                  )}
+                </span>
               </div>
               <p className="mt-2 font-display text-lg leading-snug font-semibold">
                 {mottoFuerWoche(woche)}
@@ -130,6 +182,30 @@ export function Nahfokus({
           );
         })}
       </div>
+
+      {konfetti ? (
+        <div className="fixed inset-0 z-[70] flex items-end justify-center bg-foreground/40 p-3 sm:items-center">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Wochenziel geschafft"
+            className="app-karte relative w-full max-w-md overflow-hidden p-5"
+          >
+            <KonfettiFeld />
+            <h2 className="relative font-display text-2xl font-semibold">Diese Woche geschafft.</h2>
+            <p className="relative mt-2 text-sm text-muted-foreground">
+              Schön, dass ihr euch etwas Gutes vorgenommen habt.
+            </p>
+            <button
+              type="button"
+              onClick={() => setKonfetti(false)}
+              className="relative mt-4 min-h-12 w-full rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground"
+            >
+              Schließen
+            </button>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

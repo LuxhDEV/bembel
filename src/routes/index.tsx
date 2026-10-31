@@ -18,8 +18,10 @@ import {
   LayoutGrid,
 } from "lucide-react";
 
+import { FeierOverlay } from "@/components/FeierOverlay";
 import { MutmachZentrale } from "@/components/MutmachZentrale";
 import { Nahfokus } from "@/components/Nahfokus";
+import { useHeute } from "@/hooks/use-heute";
 
 import {
   PHASEN,
@@ -217,7 +219,8 @@ function BereichNav({
 }
 
 function Lebenslinie() {
-  const heuteWoche = Math.max(0, Math.min(MAX_WOCHE, aktuelleWoche()));
+  const { heute, bereit } = useHeute();
+  const heuteWoche = Math.max(0, Math.min(MAX_WOCHE, aktuelleWoche(heute)));
   const [filter, setFilter] = useState<Filter>("alle");
   const [suche, setSuche] = useState("");
   const [gewaehlt, setGewaehlt] = useState<number | null>(null);
@@ -324,14 +327,19 @@ function Lebenslinie() {
           <div className="mt-5 space-y-5">
             {bereich === "heute" || bereich === "meilensteine" || bereich === "gesamt" ? (
               <MutmachZentrale
+                heute={heute}
                 heuteWoche={heuteWoche}
                 onPhaseWaehlen={(w) => setGewaehlt(w)}
-                bereich={bereich === "wochen" ? "heute" : bereich}
+                bereich={bereich}
               />
             ) : null}
 
             {bereich === "wochen" ? (
-              <Nahfokus heuteWoche={heuteWoche} onWocheWaehlen={(w) => setGewaehlt(w)} />
+              <Nahfokus
+                heute={heute}
+                heuteWoche={heuteWoche}
+                onWocheWaehlen={(w) => setGewaehlt(w)}
+              />
             ) : null}
 
             {gesamt ? (
@@ -632,6 +640,7 @@ function Lebenslinie() {
           </div>
         </div>
       )}
+      <FeierOverlay heute={heute} bereit={bereit} />
     </div>
   );
 }

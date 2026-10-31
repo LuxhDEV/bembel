@@ -27,6 +27,7 @@ export const STORAGE_KEYS = {
   bereich: "bembel:bereich",
   einheit: "bembel:einheit",
   wochenziel: "bembel:wochenziel",
+  feiern: "bembel:feiern",
 } as const;
 
 export type Ansicht = "nah" | "gesamt";
@@ -318,6 +319,8 @@ export type WochenzielSpeicher = {
   bis: string;
   text: string;
   gemeistert?: { bis: string; text: string };
+  /** Haken am Wochenziel, nur für die laufende Kalenderwoche. */
+  erledigt?: boolean;
 };
 
 export function wochenzielLaden(roh: string | null, heute: Date): WochenzielSpeicher {
@@ -338,9 +341,12 @@ export function wochenzielLaden(roh: string | null, heute: Date): WochenzielSpei
       return { bis, text: "", gemeistert: { bis: daten.bis, text: daten.text.trim() } };
     }
     if (daten.bis === bis) {
-      return gemeistert
-        ? { bis, text: typeof daten.text === "string" ? daten.text : "", gemeistert }
-        : { bis, text: typeof daten.text === "string" ? daten.text : "" };
+      const text = typeof daten.text === "string" ? daten.text : "";
+      const erledigt = daten.erledigt === true;
+      if (gemeistert && erledigt) return { bis, text, gemeistert, erledigt: true };
+      if (gemeistert) return { bis, text, gemeistert };
+      if (erledigt) return { bis, text, erledigt: true };
+      return { bis, text };
     }
     return gemeistert ? { ...leer, gemeistert } : leer;
   } catch {

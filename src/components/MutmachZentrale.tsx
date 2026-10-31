@@ -8,6 +8,8 @@ import {
   ListChecks,
   ChevronUp,
 } from "lucide-react";
+import { KITA_BEGINN, etappenListe } from "@/data/etappen";
+import { verdienteRunden } from "@/data/feiern";
 import {
   PHASEN,
   GEBURTSDATUM,
@@ -30,9 +32,9 @@ import {
   type Einheit,
 } from "@/data/wahrnehmung";
 import { useStoredString } from "@/hooks/use-stored-string";
+import { kalendertage } from "@/lib/heute";
 
 const TAG_MS = 1000 * 60 * 60 * 24;
-const KITA_BEGINN = new Date(2027, 5, 1); // 01.06.2027
 
 const MUTMACH_SPRUECHE = [
   "Du machst das gerade gut genug – und genug ist genau richtig.",
@@ -45,9 +47,7 @@ const MUTMACH_SPRUECHE = [
 ];
 
 function tageDiff(a: Date, b: Date) {
-  const d1 = new Date(a.getFullYear(), a.getMonth(), a.getDate()).getTime();
-  const d2 = new Date(b.getFullYear(), b.getMonth(), b.getDate()).getTime();
-  return Math.round((d1 - d2) / TAG_MS);
+  return kalendertage(a, b);
 }
 
 // Tägengenaue (gebrochene) Differenz für fließende Fortschrittsanzeigen.
@@ -81,50 +81,7 @@ function Kachel({
 
 function KitaEtappen({ heute, einheit }: { heute: Date; einheit: Einheit }) {
   const [alleAnzeigen, setAlleAnzeigen] = useState(false);
-  const start = GEBURTSDATUM.getTime();
-  const ende = KITA_BEGINN.getTime();
-  const anteil = (f: number) => new Date(start + (ende - start) * f);
-  const etappen: { titel: string; datum: Date; emoji: string }[] = [
-    { titel: "Herbstanfang", datum: new Date(2026, 8, 23), emoji: "🍂" },
-    {
-      titel: "Winterzeit: früher dunkel, dafür morgens heller",
-      datum: new Date(2026, 9, 25),
-      emoji: "🕰️",
-    },
-    { titel: "Halbzeit bis zur Kita", datum: anteil(1 / 2), emoji: "⚖️" },
-    { titel: "Nikolaus", datum: new Date(2026, 11, 6), emoji: "🎅" },
-    {
-      titel: "Kürzester Tag – ab jetzt werden die Tage wieder länger",
-      datum: new Date(2026, 11, 21),
-      emoji: "🌅",
-    },
-    { titel: "Weihnachten", datum: new Date(2026, 11, 24), emoji: "🎄" },
-    { titel: "Baby wird ½ Jahr alt", datum: new Date(2026, 11, 30), emoji: "🎂" },
-    { titel: "Silvester", datum: new Date(2026, 11, 31), emoji: "🎆" },
-    { titel: "Urlaub", datum: new Date(2027, 0, 10), emoji: "🏖️" },
-    { titel: "Mamas Geburtstag", datum: new Date(2027, 0, 21), emoji: "💐" },
-    { titel: "Erstes neues Gehalt", datum: new Date(2027, 0, 28), emoji: "💶" },
-    { titel: "Tage werden spürbar länger (Lichtmess)", datum: new Date(2027, 1, 2), emoji: "🕯️" },
-    { titel: "2/3 der Zeit geschafft", datum: anteil(2 / 3), emoji: "💪" },
-    {
-      titel: "100-Nächte-Marke auf dem Weg zur Kita",
-      datum: new Date(ende - 100 * TAG_MS),
-      emoji: "💯",
-    },
-    {
-      titel: "50-Nächte-Marke auf dem Weg zur Kita",
-      datum: new Date(ende - 50 * TAG_MS),
-      emoji: "🌟",
-    },
-    { titel: "Frühlingsanfang", datum: new Date(2027, 2, 20), emoji: "🌷" },
-    { titel: "Sommerzeit: abends wieder lange hell", datum: new Date(2027, 2, 28), emoji: "☀️" },
-    { titel: "Ostern", datum: new Date(2027, 2, 28), emoji: "🐣" },
-    { titel: "3/4 der Zeit geschafft", datum: anteil(3 / 4), emoji: "🚀" },
-    { titel: "Ein-Monats-Marke vor der Kita", datum: new Date(2027, 4, 1), emoji: "📅" },
-    { titel: "Schatzis Geburtstag", datum: new Date(2027, 4, 7), emoji: "❤️" },
-    { titel: "Eine-Woche-Marke vor der Kita", datum: new Date(2027, 4, 25), emoji: "🎒" },
-    { titel: "Kita-Beginn", datum: KITA_BEGINN, emoji: "🏫" },
-  ].sort((a, b) => a.datum.getTime() - b.datum.getTime());
+  const etappen = etappenListe();
 
   const naechsteIdx = etappen.findIndex((e) => tageDiff(e.datum, heute) >= 0);
   const geschafft = naechsteIdx === -1 ? etappen.length : naechsteIdx;
@@ -184,7 +141,7 @@ function KitaEtappen({ heute, einheit }: { heute: Date; einheit: Einheit }) {
             const diff = tageDiff(e.datum, heute);
             return (
               <li
-                key={`${e.titel}-${e.datum.getTime()}`}
+                key={e.id}
                 className={[
                   "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm leading-tight",
                   istNaechste
@@ -219,40 +176,80 @@ function KitaEtappen({ heute, einheit }: { heute: Date; einheit: Einheit }) {
   );
 }
 
-const KONFETTI_FARBEN = ["bg-primary", "bg-growth", "bg-intense", "bg-calm", "bg-foreground"];
-
-function KonfettiBadge({ sprint }: { sprint: number }) {
+function ZehnVollHinweis() {
   return (
-    <div className="relative mt-3 overflow-hidden rounded-2xl border border-growth/40 bg-growth-soft px-3 py-2.5">
-      <span className="pointer-events-none absolute inset-0" aria-hidden>
-        {Array.from({ length: 14 }, (_, i) => (
-          <span
-            key={i}
-            className={`konfetti-stueck ${KONFETTI_FARBEN[i % KONFETTI_FARBEN.length]}`}
-            style={{
-              left: `${6 + ((i * 7) % 88)}%`,
-              animationDelay: `${(i % 5) * 0.08}s`,
-            }}
-          />
-        ))}
-      </span>
-      <p className="relative text-sm font-semibold">
-        Zehn Nächte voll – Runde {sprint} habt ihr zusammen erlebt
+    <p className="mt-3 rounded-2xl border border-growth/40 bg-growth-soft px-3 py-2.5 text-sm font-semibold">
+      Diese zehn Nächte habt ihr zusammen erlebt.
+    </p>
+  );
+}
+
+function MedaillenSammlung({ naechte }: { naechte: number }) {
+  const levels = LEVELS.filter((level) => naechte >= level.bisTag);
+  const runden = verdienteRunden(naechte);
+  const leer = levels.length === 0 && runden.length === 0;
+
+  return (
+    <div className="app-karte p-4 sm:p-5" data-medaillen>
+      <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+        Eure Medaillen
       </p>
+      <p className="mt-1 text-sm leading-snug text-muted-foreground">
+        Alles, was ihr in diesem Alter schon zusammen erreicht habt.
+      </p>
+      {leer ? (
+        <p className="mt-3 text-sm">
+          Die erste Medaille kommt mit der Zeit. Ihr seid schon unterwegs.
+        </p>
+      ) : (
+        <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {levels.map((level) => (
+            <li
+              key={`level-${level.nr}`}
+              className="flex flex-col items-center rounded-2xl border border-primary/30 bg-primary/10 px-2 py-3 text-center"
+            >
+              <span className="text-3xl" aria-hidden>
+                {level.emoji}
+              </span>
+              <span className="mt-1 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+                Level {level.nr}
+              </span>
+              <span className="mt-0.5 text-xs leading-snug font-semibold">{level.titel}</span>
+            </li>
+          ))}
+          {runden.map((n) => (
+            <li
+              key={`runde-${n}`}
+              data-medaille={`runde-${n}`}
+              className="flex flex-col items-center rounded-2xl border border-primary/30 bg-primary/10 px-2 py-3 text-center"
+            >
+              <span className="text-3xl" aria-hidden>
+                🏅
+              </span>
+              <span className="mt-1 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+                Sondermedaille
+              </span>
+              <span className="mt-0.5 text-xs leading-snug font-semibold">{n} Nächte</span>
+              <span className="text-[10px] text-muted-foreground">zusammen erlebt</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
 
 export function MutmachZentrale({
+  heute,
   heuteWoche,
   onPhaseWaehlen,
   bereich,
 }: {
+  heute: Date;
   heuteWoche: number;
   onPhaseWaehlen: (woche: number) => void;
   bereich: "heute" | "meilensteine" | "gesamt";
 }) {
-  const heute = new Date();
   const aktuellePhase = phaseFuerWoche(heuteWoche);
   const idx = PHASEN.findIndex((p) => p.id === aktuellePhase.id);
   const naechste: Phase | undefined = PHASEN[idx + 1];
@@ -364,6 +361,7 @@ export function MutmachZentrale({
   if (bereich === "meilensteine") {
     return (
       <section className="space-y-4">
+        <MedaillenSammlung naechte={geschaffteNaechte} />
         <div className="app-karte p-4 sm:p-5">{levelKette}</div>
         {zauberKarte}
         {naechste ? (
@@ -427,9 +425,7 @@ export function MutmachZentrale({
         <p className="sr-only">
           {sprint.nacht} von {sprint.von} Nächten in diesen zehn Nächten erlebt
         </p>
-        {sprint.geschafft && sprint.abgeschlossenerSprint !== null ? (
-          <KonfettiBadge sprint={sprint.abgeschlossenerSprint} />
-        ) : null}
+        {sprint.geschafft && sprint.abgeschlossenerSprint !== null ? <ZehnVollHinweis /> : null}
       </div>
 
       <div>
