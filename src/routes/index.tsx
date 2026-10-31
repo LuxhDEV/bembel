@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { MutmachZentrale } from "@/components/MutmachZentrale";
+import { Nahfokus } from "@/components/Nahfokus";
 
 import {
   PHASEN,
@@ -28,21 +29,23 @@ import {
   phaseFuerWoche,
   type Phase,
 } from "@/data/lebenslinie";
+import { STORAGE_KEYS, mottoFuerWoche, type Ansicht } from "@/data/wahrnehmung";
+import { useStoredString } from "@/hooks/use-stored-string";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Die Lebenslinie – Kindesentwicklung Woche 0 bis 208" },
+      { title: "Die Lebenslinie – diese Woche" },
       {
         name: "description",
         content:
-          "Interaktive Zeitlinie von der Geburt bis zum 4. Lebensjahr: Schlafentwicklung, Meilensteine, Stresslevel und ein Mantra für jede Woche.",
+          "Nahfokus auf diese und die nächsten Wochen: Schlaf, Meilensteine, Stresslevel und ein Mantra. Die Gesamtansicht bleibt einen Klick entfernt.",
       },
-      { property: "og:title", content: "Die Lebenslinie – Begleitung durch Woche 0 bis 208" },
+      { property: "og:title", content: "Die Lebenslinie – diese Woche" },
       {
         property: "og:description",
         content:
-          "Wo seid ihr gerade? Stress-Tacho, Schlaf-Status und Meilensteine für jede Woche der ersten vier Jahre.",
+          "Wo seid ihr gerade? Stress-Tacho, Schlaf-Status und Meilensteine für die Woche, die gerade läuft.",
       },
     ],
   }),
@@ -86,13 +89,7 @@ function StressTacho({ wert, gross = false }: { wert: number; gross?: boolean })
             className={[
               "rounded-full transition-all",
               gross ? "h-3 w-7" : "h-2 w-4",
-              i <= wert
-                ? i <= 2
-                  ? "bg-calm"
-                  : i === 3
-                    ? "bg-growth"
-                    : "bg-intense"
-                : "bg-border",
+              i <= wert ? (i <= 2 ? "bg-calm" : i === 3 ? "bg-growth" : "bg-intense") : "bg-border",
             ].join(" ")}
           />
         ))}
@@ -152,14 +149,17 @@ function InfoListe({
   );
 }
 
-
 function Lebenslinie() {
   const heuteWoche = Math.max(0, Math.min(MAX_WOCHE, aktuelleWoche()));
   const [filter, setFilter] = useState<Filter>("alle");
   const [suche, setSuche] = useState("");
   const [gewaehlt, setGewaehlt] = useState<number | null>(null);
+  const [ansichtRoh, setAnsicht] = useStoredString(STORAGE_KEYS.ansicht, "nah");
+  const gesamt = ansichtRoh === "gesamt";
+  const ansichtSetzen = (ansicht: Ansicht) => setAnsicht(ansicht);
 
   const aktuellePhase = phaseFuerWoche(heuteWoche);
+  const wochenMotto = mottoFuerWoche(heuteWoche);
 
   const sichtbar = useMemo(() => {
     const q = suche.trim().toLowerCase();
@@ -192,6 +192,7 @@ function Lebenslinie() {
   }, [filter, suche]);
 
   const detail = gewaehlt === null ? null : phaseFuerWoche(gewaehlt);
+  const phasenListe = gesamt ? sichtbar : [aktuellePhase];
 
   return (
     <main className="min-h-screen bg-background pb-24">
@@ -204,8 +205,11 @@ function Lebenslinie() {
           </div>
 
           <h1 className="mt-2 text-2xl leading-tight font-semibold sm:text-3xl">
-            {alterText(heuteWoche)} – {aktuellePhase.titel}
+            {gesamt ? `${alterText(heuteWoche)} – ${aktuellePhase.titel}` : wochenMotto}
           </h1>
+          <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+            {gesamt ? wochenMotto : aktuellePhase.titel}
+          </p>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <div className="rounded-2xl border border-border bg-card p-3">
@@ -223,110 +227,116 @@ function Lebenslinie() {
               <p className="mt-2 text-sm leading-snug">{aktuellePhase.schlafStatus}</p>
             </div>
 
-            <div
-              className={`rounded-2xl border p-3 ${TON_STYLE[aktuellePhase.ton].chip}`}
-            >
+            <div className={`rounded-2xl border p-3 ${TON_STYLE[aktuellePhase.ton].chip}`}>
               <p className="flex items-center gap-1 text-xs font-semibold opacity-70">
                 <Sparkles className="h-3.5 w-3.5" /> Mantra der Woche
               </p>
-              <p className="mt-2 text-sm leading-snug font-medium">
-                „{aktuellePhase.motivation}“
-              </p>
+              <p className="mt-2 text-sm leading-snug font-medium">„{aktuellePhase.motivation}“</p>
             </div>
           </div>
         </div>
       </header>
 
       <div className="mx-auto max-w-5xl px-4">
-        <MutmachZentrale heuteWoche={heuteWoche} onPhaseWaehlen={(w) => setGewaehlt(w)} />
+        <MutmachZentrale
+          heuteWoche={heuteWoche}
+          onPhaseWaehlen={(w) => setGewaehlt(w)}
+          gesamtansicht={gesamt}
+        />
 
-        {/* Übersichtsleiste 0–208 (Fernblick, standardmäßig eingeklappt) */}
-        <details className="group mt-6">
-          <summary className="cursor-pointer list-none rounded-2xl border border-border bg-card px-4 py-2.5 text-center text-xs font-semibold text-muted-foreground hover:bg-accent">
-            <span className="group-open:hidden">🔭 Fernblick: alle 4 Jahre anzeigen</span>
-            <span className="hidden group-open:inline">Fernblick ausblenden – lieber Nahfokus</span>
-          </summary>
-        <section className="mt-3 rounded-3xl border border-border bg-card p-4">
-          <div className="flex items-baseline justify-between text-xs text-muted-foreground">
-            <span>Woche 0</span>
-            <span className="font-semibold text-foreground">
-              Wir sind bei Woche {heuteWoche}
-            </span>
-            <span>Woche 208</span>
-          </div>
-          <div className="relative mt-6 mb-6 h-4 w-full overflow-visible rounded-full">
-            <div className="flex h-4 w-full overflow-hidden rounded-full">
-              {PHASEN.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => setGewaehlt(p.von)}
-                  title={`Woche ${p.von}–${p.bis}: ${p.titel}`}
-                  aria-label={`Woche ${p.von} bis ${p.bis}: ${p.titel}`}
-                  className={`h-full ${TON_STYLE[p.ton].line} opacity-80 transition-opacity hover:opacity-100`}
-                  style={{ width: `${((p.bis - p.von + 1) / (MAX_WOCHE + 1)) * 100}%` }}
-                />
+        <Nahfokus heuteWoche={heuteWoche} onWocheWaehlen={(w) => setGewaehlt(w)} />
+
+        <button
+          type="button"
+          aria-pressed={gesamt}
+          onClick={() => ansichtSetzen(gesamt ? "nah" : "gesamt")}
+          className="mt-6 w-full rounded-2xl border border-border bg-card px-4 py-2.5 text-center text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent"
+        >
+          {gesamt ? "Zurück zum Nahfokus" : "Gesamtansicht"}
+        </button>
+
+        {gesamt ? (
+          <section className="mt-3 rounded-3xl border border-border bg-card p-4">
+            <div className="flex items-baseline justify-between text-xs text-muted-foreground">
+              <span>Woche 0</span>
+              <span className="font-semibold text-foreground">Wir sind bei Woche {heuteWoche}</span>
+              <span>Woche 208</span>
+            </div>
+            <div className="relative mt-6 mb-6 h-4 w-full overflow-visible rounded-full">
+              <div className="flex h-4 w-full overflow-hidden rounded-full">
+                {PHASEN.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setGewaehlt(p.von)}
+                    title={`Woche ${p.von}–${p.bis}: ${p.titel}`}
+                    aria-label={`Woche ${p.von} bis ${p.bis}: ${p.titel}`}
+                    className={`h-full ${TON_STYLE[p.ton].line} opacity-80 transition-opacity hover:opacity-100`}
+                    style={{ width: `${((p.bis - p.von + 1) / (MAX_WOCHE + 1)) * 100}%` }}
+                  />
+                ))}
+              </div>
+              <div
+                className="pointer-events-none absolute -top-3 -translate-x-1/2"
+                style={{ left: `${(heuteWoche / MAX_WOCHE) * 100}%` }}
+              >
+                <div className="h-10 w-1 rounded-full bg-foreground/80" />
+                <div className="absolute -top-1 left-1/2 h-4 w-4 -translate-x-1/2 rounded-full border-2 border-background bg-foreground" />
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+              {(["ruhig", "wachstum", "intensiv"] as const).map((t) => (
+                <span key={t} className="flex items-center gap-1.5">
+                  <span className={`h-2.5 w-2.5 rounded-full ${TON_STYLE[t].line}`} />
+                  {TON_STYLE[t].label}
+                </span>
               ))}
             </div>
-            <div
-              className="pointer-events-none absolute -top-3 -translate-x-1/2"
-              style={{ left: `${(heuteWoche / MAX_WOCHE) * 100}%` }}
-            >
-              <div className="h-10 w-1 rounded-full bg-foreground/80" />
-              <div className="absolute -top-1 left-1/2 h-4 w-4 -translate-x-1/2 rounded-full border-2 border-background bg-foreground" />
+          </section>
+        ) : null}
+
+        {/* Filter & Suche – nur in der Gesamtansicht, damit der Alltag nah bleibt */}
+        {gesamt ? (
+          <section className="mt-5 space-y-3">
+            <div className="relative">
+              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={suche}
+                onChange={(e) => setSuche(e.target.value)}
+                placeholder="Suche: Karten spielen, Schreiphase, Lächeln, Obstgarten …"
+                className="w-full rounded-2xl border border-border bg-card py-3 pr-4 pl-10 text-sm outline-none focus:border-primary/60"
+              />
             </div>
-          </div>
-          <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-            {(["ruhig", "wachstum", "intensiv"] as const).map((t) => (
-              <span key={t} className="flex items-center gap-1.5">
-                <span className={`h-2.5 w-2.5 rounded-full ${TON_STYLE[t].line}`} />
-                {TON_STYLE[t].label}
-              </span>
-            ))}
-          </div>
-        </section>
-        </details>
+            <div className="flex flex-wrap gap-2">
+              {FILTER.map((f) => {
+                const Icon = f.icon;
+                const aktiv = filter === f.id;
+                return (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setFilter(f.id)}
+                    className={[
+                      "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
+                      aktiv
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-card text-muted-foreground hover:bg-accent",
+                    ].join(" ")}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {f.label}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
 
-        {/* Filter & Suche */}
-        <section className="mt-5 space-y-3">
-          <div className="relative">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              value={suche}
-              onChange={(e) => setSuche(e.target.value)}
-              placeholder="Suche: Karten spielen, Schreiphase, Lächeln, Obstgarten …"
-              className="w-full rounded-2xl border border-border bg-card py-3 pr-4 pl-10 text-sm outline-none focus:border-primary/60"
-            />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {FILTER.map((f) => {
-              const Icon = f.icon;
-              const aktiv = filter === f.id;
-              return (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setFilter(f.id)}
-                  className={[
-                    "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
-                    aktiv
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-card text-muted-foreground hover:bg-accent",
-                  ].join(" ")}
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  {f.label}
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Zeitstrahl */}
+        {/* Zeitstrahl: im Nahfokus nur die laufende Phase, sonst die ganze Linie */}
         <section className="relative mt-8">
           <div className="absolute top-2 bottom-2 left-[15px] w-0.5 rounded-full bg-border sm:left-[19px]" />
           <div className="space-y-4">
-            {sichtbar.map((p) => {
+            {phasenListe.map((p) => {
               const istJetzt = heuteWoche >= p.von && heuteWoche <= p.bis;
               return (
                 <article key={p.id} className="relative pl-10 sm:pl-14">
@@ -348,7 +358,7 @@ function Lebenslinie() {
                       {p.abschnitt}
                     </p>
                     <h2 className="mt-1 text-lg font-semibold">
-                      Woche {p.von}–{p.bis}: {p.titel}
+                      {gesamt ? `Woche ${p.von}–${p.bis}: ${p.titel}` : p.titel}
                     </h2>
                     <p className="text-sm text-muted-foreground">{p.kurz}</p>
 
@@ -395,40 +405,22 @@ function Lebenslinie() {
                         Mehr Infos: Ernährung, Spielideen, Tipps &amp; Vorsorge
                       </summary>
                       <div className="mt-3 space-y-3">
-                        <InfoBlock
-                          icon={Utensils}
-                          titel="Ernährung"
-                          text={p.ernaehrung}
-                        />
-                        <InfoListe
-                          icon={Gamepad2}
-                          titel="Spielideen"
-                          punkte={p.spielideen}
-                        />
-                        <InfoListe
-                          icon={Lightbulb}
-                          titel="Alltagstipps"
-                          punkte={p.alltagstipps}
-                        />
+                        <InfoBlock icon={Utensils} titel="Ernährung" text={p.ernaehrung} />
+                        <InfoListe icon={Gamepad2} titel="Spielideen" punkte={p.spielideen} />
+                        <InfoListe icon={Lightbulb} titel="Alltagstipps" punkte={p.alltagstipps} />
                         <InfoBlock icon={Heart} titel="Für euch als Eltern" text={p.elternfokus} />
                         <InfoBlock
                           icon={Stethoscope}
                           titel="Vorsorge & Termine"
                           text={p.vorsorge}
                         />
-                        <InfoBlock
-                          icon={AlertTriangle}
-                          titel="Gut zu wissen"
-                          text={p.achtung}
-                        />
+                        <InfoBlock icon={AlertTriangle} titel="Gut zu wissen" text={p.achtung} />
                       </div>
                     </details>
 
-
-
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {Array.from({ length: p.bis - p.von + 1 }, (_, i) => p.von + i).map(
-                        (w) => (
+                    {gesamt ? (
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {Array.from({ length: p.bis - p.von + 1 }, (_, i) => p.von + i).map((w) => (
                           <button
                             key={w}
                             type="button"
@@ -442,17 +434,16 @@ function Lebenslinie() {
                           >
                             {w}
                           </button>
-                        ),
-                      )}
-                    </div>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
                 </article>
               );
             })}
-            {sichtbar.length === 0 && (
+            {gesamt && sichtbar.length === 0 && (
               <p className="rounded-3xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-                Nichts gefunden. Versuch es z. B. mit „Memory“, „Witching Hour“ oder
-                „Beikost“.
+                Nichts gefunden. Versuch es z. B. mit „Memory“, „Witching Hour“ oder „Beikost“.
               </p>
             )}
           </div>
@@ -481,6 +472,7 @@ function Lebenslinie() {
                   {formatDatum(datumFuerWoche(gewaehlt))} –{" "}
                   {formatDatum(new Date(datumFuerWoche(gewaehlt + 1).getTime() - 86400000))}
                 </p>
+                <p className="mt-1 text-sm font-medium">{mottoFuerWoche(gewaehlt)}</p>
               </div>
               <button
                 type="button"
@@ -511,8 +503,6 @@ function Lebenslinie() {
                 </p>
               </div>
 
-
-
               <div className="rounded-2xl border border-border p-3">
                 <p className="text-xs font-semibold text-muted-foreground">Meilensteine</p>
                 <ul className="mt-1 space-y-1 text-sm">
@@ -533,8 +523,6 @@ function Lebenslinie() {
                 <InfoBlock icon={Stethoscope} titel="Vorsorge & Termine" text={detail.vorsorge} />
                 <InfoBlock icon={AlertTriangle} titel="Gut zu wissen" text={detail.achtung} />
               </div>
-
-
 
               <div className={`rounded-2xl border p-3 ${TON_STYLE[detail.ton].chip}`}>
                 <p className="text-xs font-semibold opacity-70">Motivation</p>

@@ -172,3 +172,33 @@
     font-family: var(--font-display);
   }
 }
+
+@keyframes konfetti-fall {
+  0% {
+    transform: translateY(-8px) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(36px) rotate(160deg);
+    opacity: 0;
+  }
+}
+
+.konfetti-stueck {
+  position: absolute;
+  top: 0;
+  width: 7px;
+  height: 9px;
+  border-radius: 2px;
+  animation: konfetti-fall 1.3s ease-in forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .konfetti-stueck {
+    animation: none;
+    opacity: 0.7;
+  }
+}
