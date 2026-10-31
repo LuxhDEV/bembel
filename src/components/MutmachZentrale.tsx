@@ -80,6 +80,7 @@ function KitaEtappen({ heute }: { heute: Date }) {
     { titel: "Tage werden spürbar länger (Lichtmess)", datum: new Date(2027, 1, 2), emoji: "🕯️" },
     { titel: "2/3 der Zeit geschafft", datum: anteil(2 / 3), emoji: "💪" },
     { titel: "Nur noch 100 Nächte", datum: new Date(ende - 100 * TAG_MS), emoji: "💯" },
+    { titel: "Nur noch 50 Nächte", datum: new Date(ende - 50 * TAG_MS), emoji: "🌟" },
     { titel: "Frühlingsanfang", datum: new Date(2027, 2, 20), emoji: "🌷" },
     { titel: "Sommerzeit: abends wieder lange hell", datum: new Date(2027, 2, 28), emoji: "☀️" },
     { titel: "Ostern", datum: new Date(2027, 2, 28), emoji: "🐣" },
