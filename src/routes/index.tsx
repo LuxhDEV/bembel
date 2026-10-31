@@ -240,8 +240,13 @@ function Lebenslinie() {
       <div className="mx-auto max-w-5xl px-4">
         <MutmachZentrale heuteWoche={heuteWoche} onPhaseWaehlen={(w) => setGewaehlt(w)} />
 
-        {/* Übersichtsleiste 0–208 */}
-        <section className="mt-6 rounded-3xl border border-border bg-card p-4">
+        {/* Übersichtsleiste 0–208 (Fernblick, standardmäßig eingeklappt) */}
+        <details className="group mt-6">
+          <summary className="cursor-pointer list-none rounded-2xl border border-border bg-card px-4 py-2.5 text-center text-xs font-semibold text-muted-foreground hover:bg-accent">
+            <span className="group-open:hidden">🔭 Fernblick: alle 4 Jahre anzeigen</span>
+            <span className="hidden group-open:inline">Fernblick ausblenden – lieber Nahfokus</span>
+          </summary>
+        <section className="mt-3 rounded-3xl border border-border bg-card p-4">
           <div className="flex items-baseline justify-between text-xs text-muted-foreground">
             <span>Woche 0</span>
             <span className="font-semibold text-foreground">
@@ -280,6 +285,7 @@ function Lebenslinie() {
             ))}
           </div>
         </section>
+        </details>
 
         {/* Filter & Suche */}
         <section className="mt-5 space-y-3">
